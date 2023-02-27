@@ -23,16 +23,16 @@ P2_moving_left = False
 player2_y_momentum = 0
 P2_gravity = 0
 
-player1_image = pygame.image.load('Wraith_01.png').convert()
+player1_image = pygame.image.load('Main\Assets\Pink_Monster.png').convert()
 player1_image.set_colorkey((255, 255, 255))
 
-player2_image = pygame.image.load('Wraith_01.png').convert()
+player2_image = pygame.image.load('Main\Assets\Pink_Monster.png').convert()
 player2_image.set_colorkey((255, 255, 255))
 
-grass_image = pygame.image.load('grass.png')
+grass_image = pygame.image.load('Main\Assets\grass.png')
 TILE_SIZE = grass_image.get_width()
 
-dirt_image = pygame.image.load('dirt.png')
+dirt_image = pygame.image.load('Main\Assets\dirt.png')
 
 game_map = [['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
             ['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
@@ -89,6 +89,16 @@ def player1Move(player1_rect, movement, tiles, player2_rect):
         if movement[0] > 0:
             player1_rect.right = player2_rect.left
             P1_collision_types['right'] = True
+        elif movement[0] < 0:
+            player1_rect.left = player2_rect.right
+            P1_collision_types['left'] = True
+
+        if movement[1] > 0:
+            player1_rect.bottom = player2_rect.top
+            P1_collision_types['bottom'] = True
+        elif movement[1] < 0:
+            player1_rect.top = player2_rect.bottom
+            P1_collision_types['top'] = True
 
     return player1_rect, P1_collision_types
 
@@ -111,6 +121,22 @@ def player2Move(player2_rect, movement, tiles, player1_rect):
             P2_collision_types['bottom'] = True
         elif movement[1] < 0:
             player2_rect.top = tile.bottom
+            P2_collision_types['top'] = True
+
+    player_collision = playerCollisionTest(player1_rect, player2_rect)
+    if player_collision == True:
+        if movement[0] > 0:
+            player2_rect.right = player1_rect.left
+            P2_collision_types['right'] = True
+        elif movement[0] < 0:
+            player2_rect.left = player1_rect.right
+            P2_collision_types['left'] = True
+
+        if movement[1] > 0:
+            player2_rect.bottom = player1_rect.top
+            P2_collision_types['bottom'] = True
+        elif movement[1] < 0:
+            player2_rect.top = player1_rect.bottom
             P2_collision_types['top'] = True
     return player2_rect, P2_collision_types
 
