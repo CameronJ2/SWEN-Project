@@ -224,4 +224,3 @@ while True: # game loop
     screen.blit(surf, (0, 0))
     pygame.display.update() # update display
     clock.tick(60) # maintain 60 fps
-#Edgar
