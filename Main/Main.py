@@ -51,7 +51,7 @@ def playerCollisionTest(player1_rect, player2_rect):
     player_collision = False
     if player1_rect.colliderect(player2_rect):
         player_collision = True
-        print('collision detected')
+        #print('collision detected')
     return player_collision
 
 
@@ -176,6 +176,10 @@ while True: # game loop
 
     player1_rect, P1_collisions = player1Move(player1.playerRect, player1_movement, tile_rects, player2.playerRect)
     player2_rect, P2_collisions = player2Move(player2.playerRect, player2_movement, tile_rects, player1.playerRect)
+    print('player1_rect')
+    print(player1_rect)
+    print('player1_collisions')
+    print(P1_collisions)
     if P1_collisions['bottom']:
         player1_y_momentum = 0
         P1_gravity = 0

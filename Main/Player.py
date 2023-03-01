@@ -13,19 +13,3 @@ class Player:
         self.movingRight = False
         self.movingLeft = False
         self.yMomentum = 0
-
-
-    def movementEvents(self): #to be used in the game loop
-        if event.type == KEYDOWN:
-            if event.key == K_RIGHT:
-                self.movingRight = True
-            if event.key == K_LEFT:
-                self.movingLeft = True
-            if event.key == K_UP:
-                if P1_gravity < 20:
-                    player1.yMomentum = -6
-        if event.type == KEYUP:
-            if event.key == K_RIGHT:
-                self.movingRight = False
-            if event.key == K_LEFT:
-                self.movingLeft = False
