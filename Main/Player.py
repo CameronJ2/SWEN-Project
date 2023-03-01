@@ -9,7 +9,7 @@ class Player:
                                       #for instance, the absolute (full) path for me is: H:\Projects\SWEN-Project\Main\Assets\Pink_Monster.png, but my 
                                       #working folder is SWEN-Project, so I can cut out everything before it.
         path = relativePath
-        self.playerImage = pygame.image.load(path).convert()
+        self.playerImage = pygame.image.load(path).convert_alpha()
         self.playerImage.set_colorkey((255, 255, 255))
         self.playerRect = pygame.Rect(50, 50, self.playerImage.get_width(), self.playerImage.get_height())
         self.movingRight = False
@@ -29,9 +29,23 @@ class Player:
                 self.movingLeft = True
             if event.key == self.upKey:
                 if collisions['bottom']:
-                    self.yMomentum = -6         
+                    self.yMomentum = -15        
         if event.type == KEYUP:
             if event.key == self.rightKey:
                 self.movingRight = False
             if event.key == self.leftKey:
                 self.movingLeft = False
+
+
+    def getMovement(self):
+        playerMovement = [0,0]
+        if self.movingRight:
+            playerMovement[0] += 5
+        elif self.movingLeft:
+            playerMovement[0] -= 5
+        self.yMomentum += 1
+        if self.yMomentum > 10:
+            self.yMomentum = 10
+        playerMovement[1] += self.yMomentum
+        return playerMovement
+        

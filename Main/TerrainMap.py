@@ -33,3 +33,4 @@ def mapDisplay(display):#use inside the game loop to produce map
                 tile_rects.append(pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
             x += 1
         y += 1 
+    return tile_rects

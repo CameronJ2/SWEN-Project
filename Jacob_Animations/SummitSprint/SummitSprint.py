@@ -40,7 +40,6 @@ run = True
 while run:
 
     clock.tick(60) # Delay to cap the framerate at 60 fps
-
     #loads images to screen
     screen.blit(Bimg3, (-3000,-900))
     screen.blit(Bimg2, (-3000,-900))
