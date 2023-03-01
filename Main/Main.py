@@ -1,10 +1,12 @@
-import pygame, sys # import pygame and sys
+import pygame
+from pygame import *
+import sys
 from Player import Player
 import TerrainMap
 
 clock = pygame.time.Clock() # set up the clock
 
-from pygame.locals import * # import pygame modules
+#from pygame.locals import * # import pygame modules
 pygame.init() # initiate pygame
 
 pygame.display.set_caption('Summit Sprint') # set the window name
@@ -30,8 +32,8 @@ P2_gravity = 0
 #player2_image = pygame.image.load('Main\Assets\Pink_Monster.png').convert()
 #player2_image.set_colorkey((255, 255, 255))
 
-player1 = Player('Main\Assets\Pink_Monster.png')
-player2 = Player('Main\Assets\Pink_Monster.png')
+player1 = Player('Main\Assets\Pink_Monster.png', K_UP, K_LEFT, K_RIGHT)
+player2 = Player('Main\Assets\Pink_Monster.png', K_w, K_a, K_d)
 
 grass_image = pygame.image.load('Main\Assets\grass.png')
 TILE_SIZE = grass_image.get_width()
@@ -47,94 +49,37 @@ def collision_test(rect, tiles):
             hit_list.append(tile)
     return hit_list
 
-def playerCollisionTest(player1_rect, player2_rect):
-    player_collision = False
-    if player1_rect.colliderect(player2_rect):
-        player_collision = True
-        #print('collision detected')
-    return player_collision
-
-
-def player1Move(player1_rect, movement, tiles, player2_rect):
-    P1_collision_types = {'top': False, 'bottom': False, 'right': False, 'left': False}
-    player1_rect.x += movement[0]
-    hit_list = collision_test(player1_rect, tiles)
+def movePlayer(playerRect, movement, tiles, otherPlayerRect):
+    collisionTypes = {'bottom': False}
+    playerRect.x += movement[0]
+    hit_list = collision_test(playerRect, tiles)
     for tile in hit_list:
         if movement[0] > 0:
-            player1_rect.right = tile.left
-            P1_collision_types['right'] = True
+            playerRect.right = tile.left
         elif movement[0] < 0:
-            player1_rect.left = tile.right
-            P1_collision_types['left'] = True
-    player1_rect.y += movement[1]
-    hit_list = collision_test(player1_rect, tiles)
-    for tile in hit_list:
-        if movement[1] > 0:
-            player1_rect.bottom = tile.top
-            P1_collision_types['bottom'] = True
-        elif movement[1] < 0:
-            player1_rect.top = tile.bottom
-            P1_collision_types['top'] = True
+            playerRect.left = tile.right
     
-    player_collision = playerCollisionTest(player1_rect, player2_rect)
-    if player_collision == True:
-        if movement[0] > 0:
-            player1_rect.right = player2_rect.left
-            P1_collision_types['right'] = True
-        elif movement[0] < 0:
-            player1_rect.left = player2_rect.right
-            P1_collision_types['left'] = True
-
-        if movement[1] > 0:
-            player1_rect.bottom = player2_rect.top
-            P1_collision_types['bottom'] = True
-        elif movement[1] < 0:
-            player1_rect.top = player2_rect.bottom
-            P1_collision_types['top'] = True
-
-    return player1_rect, P1_collision_types
-
-def player2Move(player2_rect, movement, tiles, player1_rect):
-    P2_collision_types = {'top': False, 'bottom': False, 'right': False, 'left': False}
-    player2_rect.x += movement[0]
-    hit_list = collision_test(player2_rect, tiles)
+    playerRect.y += movement[1]
+    hit_list = collision_test(playerRect, tiles)
     for tile in hit_list:
-        if movement[0] > 0:
-            player2_rect.right = tile.left
-            P2_collision_types['right'] = True
-        elif movement[0] < 0:
-            player2_rect.left = tile.right
-            P2_collision_types['left'] = True
-    player2_rect.y += movement[1]
-    hit_list = collision_test(player2_rect, tiles)
-    for tile in hit_list:
-        if movement[1] > 0:
-            player2_rect.bottom = tile.top
-            P2_collision_types['bottom'] = True
+        if playerRect.center[1] < tile.center[1]:
+            playerRect.bottom = tile.top
         elif movement[1] < 0:
-            player2_rect.top = tile.bottom
-            P2_collision_types['top'] = True
+            playerRect.top = tile.bottom
+    
+    #lower sensor definition: box a pixel below feet to check if player is standing on something
+    #Note: uses player1 dimensions, so try to keep all playermodels the same dimensions or come back and change this later to be more general
+    lowerSensor = pygame.Rect(playerRect.x, playerRect.bottom, player1.playerImage.get_width(), 1) 
+    lowerSensorHitList = collision_test(lowerSensor, tiles)
+    if len(lowerSensorHitList) > 0:
+        collisionTypes['bottom'] = True
 
-    player_collision = playerCollisionTest(player1_rect, player2_rect)
-    if player_collision == True:
-        if movement[0] > 0:
-            player2_rect.right = player1_rect.left
-            P2_collision_types['right'] = True
-        elif movement[0] < 0:
-            player2_rect.left = player1_rect.right
-            P2_collision_types['left'] = True
+    #fix player collision and add it here!
 
-        if movement[1] > 0:
-            player2_rect.bottom = player1_rect.top
-            P2_collision_types['bottom'] = True
-        elif movement[1] < 0:
-            player2_rect.top = player1_rect.bottom
-            P2_collision_types['top'] = True
-    return player2_rect, P2_collision_types
+    
 
-#player1_rect = pygame.Rect(50, 50, player1_image.get_width(), player1_image.get_height())
-#player2_rect = pygame.Rect(200, 50, player2_image.get_width(), player2_image.get_height()) 
-#test_rect = pygame.Rect(100,100,100,50)
+    return collisionTypes
+
 
 while True: # game loop
     display.fill((146,244,255))
@@ -174,53 +119,62 @@ while True: # game loop
     if player2.yMomentum > 5:
         player2.yMomentum = 5
 
-    player1_rect, P1_collisions = player1Move(player1.playerRect, player1_movement, tile_rects, player2.playerRect)
-    player2_rect, P2_collisions = player2Move(player2.playerRect, player2_movement, tile_rects, player1.playerRect)
-    print('player1_rect')
-    print(player1_rect)
-    print('player1_collisions')
+    # removed player1_rect variable, pointer to player1.playerRect is passed in and updated, redundant variable.
+    P1_collisions = movePlayer(player1.playerRect, player1_movement, tile_rects, player2.playerRect) 
+    P2_collisions = movePlayer(player2.playerRect, player2_movement, tile_rects, player1.playerRect)
+    
+    print("collisions")
     print(P1_collisions)
+
     if P1_collisions['bottom']:
-        player1_y_momentum = 0
+        player1.yMomentum = 0
         P1_gravity = 0
     else:
         P1_gravity += 1
 
-    if P1_collisions['top']:
-        player1_y_momentum = 1
-        P1_gravity += 0
+    '''if P1_collisions['top']:
+        player1.yMomentum = 1
     else:
-        P1_gravity += 1
+        P1_gravity += 1'''
 
 
 
     if P2_collisions['bottom']:
-        player2_y_momentum = 0
+        player2.yMomentum = 0
         P2_gravity = 0
     else:
         P2_gravity += 1
 
-    if P2_collisions['top']:
-        player2_y_momentum = 1
+    '''if P2_collisions['top']:
+        player2.yMomentum = 1
         P2_gravity += 0
     else:
-        P2_gravity += 1
+        P2_gravity += 1'''
 
-    display.blit(player1.playerImage, (player1_rect.x, player1_rect.y))
-    display.blit(player2.playerImage, (player2_rect.x, player2_rect.y))
+    display.blit(player1.playerImage, (player1.playerRect.x, player1.playerRect.y))
+    display.blit(player2.playerImage, (player2.playerRect.x, player2.playerRect.y))
     
 
     for event in pygame.event.get(): # event loop
         if event.type == QUIT: # check for window quit
             pygame.quit() # stop pygame
             sys.exit() # stop script
-        if event.type == KEYDOWN:
+
+        if event.type == KEYDOWN or event.type == KEYUP:
+            player1.movementEvents(P1_collisions, event)
+            player2.movementEvents(P2_collisions, event)
+        '''if event.type == KEYDOWN:
+            player1.movementEvents(player1, P1_collisions, event.key)
+            player2.movementEvents(player2, P2_collisions, event.key)
+
             if event.key == K_RIGHT:
                 player1.movingRight = True
             if event.key == K_LEFT:
                 player1.movingLeft = True
             if event.key == K_UP:
-                if P1_gravity < 20:
+                #if P1_gravity < 20:
+                print("jump input")
+                if P1_collisions['bottom']:
                     player1.yMomentum = -6
         if event.type == KEYUP:
             if event.key == K_RIGHT:
@@ -241,7 +195,7 @@ while True: # game loop
             if event.key == K_d:
                 player2.movingRight = False
             if event.key == K_a:
-                player2.movingLeft = False
+                player2.movingLeft = False'''
     surf = pygame.transform.scale(display, WINDOW_SIZE)
     screen.blit(surf, (0, 0))
     pygame.display.update() # update display
