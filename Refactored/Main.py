@@ -1,5 +1,6 @@
 import pygame as pg
 from player import Player
+from pygame.locals import *
 from levelLoader import load_level, load_tiles
 
 clock = pg.time.Clock()
