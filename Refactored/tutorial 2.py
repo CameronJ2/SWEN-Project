@@ -1,18 +1,3 @@
-import pygame, sys # import pygame and sys
-
-clock = pygame.time.Clock() # set up the clock
-
-from pygame.locals import * # import pygame modules
-pygame.init() # initiate pygame
-
-pygame.display.set_caption('My Pygame') # set the window name
-
-WINDOW_SIZE = (800,600) # set up window size
-
-screen = pygame.display.set_mode(WINDOW_SIZE,0,32) # initiate screen
-
-display = pygame.Surface((600, 400))
-
 P1_moving_right = False
 P1_moving_left = False
 player1_y_momentum = 0
@@ -23,30 +8,6 @@ P2_moving_left = False
 player2_y_momentum = 0
 P2_gravity = 0
 
-player1_image = pygame.image.load('Main\Assets\Pink_Monster.png').convert()
-player1_image.set_colorkey((255, 255, 255))
-
-player2_image = pygame.image.load('Main\Assets\Pink_Monster.png').convert()
-player2_image.set_colorkey((255, 255, 255))
-
-grass_image = pygame.image.load('Main\Assets\grass.png')
-TILE_SIZE = grass_image.get_width()
-
-dirt_image = pygame.image.load('Main\Assets\dirt.png')
-
-game_map = [['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-            ['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-            ['0','0','0','0','0','0','0','0','0','0','0','0','0','0','2','2','2','2','2'],
-            ['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-            ['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-            ['0','0','0','0','0','0','0','2','2','2','2','2','0','0','0','0','0','0','0'],
-            ['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-            ['2','2','2','0','0','0','0','0','0','0','0','0','0','0','0','2','2','2','2'],
-            ['1','1','1','0','0','0','0','0','0','0','0','0','0','0','0','1','1','1','1'],
-            ['1','1','1','2','2','2','0','0','0','0','0','2','2','2','2','1','1','1','1'],
-            ['1','1','1','1','1','1','2','2','2','2','2','1','1','1','1','1','1','1','1'],
-            ['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1'],
-            ['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1']]
 
 def collision_test(rect, tiles):
     hit_list = []

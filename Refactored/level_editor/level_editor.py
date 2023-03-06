@@ -1,6 +1,7 @@
 import pygame as pg
 import os
 
+
 pg.init()
 
 # Sets screen resolution
@@ -111,14 +112,14 @@ def handle_input():
 
 # Save level to a file
 def save_level():
-    with open('Refactored\level_editor\level.txt', 'w') as f:
+    with open('Refactored/level_editor/level.txt', 'w') as f:
         for row in level:
             f.write(','.join(str(tile_index) for tile_index in row))
             f.write('\n')
 
 # Load level from a file
 def load_level():
-    with open('Refactored\level_editor\level.txt', 'r') as f:
+    with open('Refactored/level_editor/level.txt', 'r') as f:
         for row, line in enumerate(f):
             tile_indices = line.strip().split(',')
             for col, tile_index in enumerate(tile_indices):
