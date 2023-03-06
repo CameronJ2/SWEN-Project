@@ -13,6 +13,9 @@ class Player:
         self.gravity = 0.5
         self.jump_power = 20
         self.jump_angle = math.radians(45) # set jump angle to 45 degrees
+        self.upkey = upkey
+        self.leftkey = leftkey
+        self.rightkey = rightkey
 
         # Load sprite sheets
         self.idle_sheet = pg.image.load(spritePath + '/Idle_4.png').convert_alpha()
@@ -41,11 +44,11 @@ class Player:
     def move(self):
         keys = pg.key.get_pressed()
 
-        if keys[pg.leftkey] and self.x > self.velocity_x:
+        if keys[self.leftkey] and self.x > self.velocity_x:
             self.velocity_x = 6
             self.x -= self.velocity_x
             self.state = 'running'
-        elif keys[pg.rightkey] and self.x < 960 - self.width - self.velocity_x:
+        elif keys[self.rightkey] and self.x < 960 - self.width - self.velocity_x:
             self.velocity_x = 6
             self.x += self.velocity_x
             self.state = 'running'
@@ -63,7 +66,7 @@ class Player:
             self.velocity_y = 0
 
         # Check for jumping
-        if keys[pg.upkey] and self.velocity_y == 0:
+        if keys[self.upkey] and self.velocity_y == 0:
             # calculate x and y velocities for jump
             self.velocity_y = -self.jump_power * math.sin(self.jump_angle)
             self.velocity_x = self.jump_power * math.cos(self.jump_angle)
@@ -100,7 +103,7 @@ class Player:
         self.image = self.get_frame(frame, scale)
 
         # Flip image if player is facing left
-        if keys[pg.K_a]:
+        if keys[self.leftkey]:
             self.image = pg.transform.flip(self.image, True, False)
 
         # Scale rect to match scaled image

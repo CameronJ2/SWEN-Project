@@ -69,6 +69,8 @@ while run:
                 screen.blit(tile, (col * tile_size, row * tile_size))
 
     # move and draw the player
+    player1.move()
+    player1.draw(screen)
     player2.move()
     player2.draw(screen)
 
