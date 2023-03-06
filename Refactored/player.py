@@ -1,51 +1,113 @@
-import pygame
-from pygame.locals import *
-import sys
-#from pygame.locals import * # import pygame modules
+import pygame as pg
+import math
 
 class Player:
-    def __init__(self, relativePath, upKey, leftKey, rightKey): #relative path here refers to the path in your filesystem to the asset. For me and my repository, it's: Main\Assets\Pink_Monster.png
-                                      #Keep in mind you don't have to type the FULL path. Relative path starts at your working folder instead of your drive.
-                                      #for instance, the absolute (full) path for me is: H:\Projects\SWEN-Project\Main\Assets\Pink_Monster.png, but my 
-                                      #working folder is SWEN-Project, so I can cut out everything before it.
-        path = relativePath
-        self.playerImage = pygame.image.load(path).convert_alpha()
-        self.playerImage.set_colorkey((255, 255, 255))
-        self.playerRect = pygame.Rect(50, 50, self.playerImage.get_width(), self.playerImage.get_height())
-        self.movingRight = False
-        self.movingLeft = False
-        self.yMomentum = 0
-        self.playerRect.center
-        self.upKey = upKey
-        self.leftKey = leftKey
-        self.rightKey = rightKey
+    def __init__(self, spritePath, x, y, width, height, scale=2):
+        self.x = x
+        self.y = y
+        self.width = int(width * scale)
+        self.height = int(height * scale)
+        self.velocity_x = 0
+        self.velocity_y = 0
+        self.max_velocity = 10
+        self.gravity = 0.5
+        self.jump_power = 20
+        self.jump_angle = math.radians(45) # set jump angle to 45 degrees
 
+        # Load sprite sheets
+        self.idle_sheet = pg.image.load(spritePath + '/Idle_4.png').convert_alpha()
+        self.running_sheet = pg.image.load(spritePath + '/Run_6.png').convert_alpha()
+        self.jumping_sheet = pg.image.load(spritePath + '/Jump_8.png').convert_alpha()
 
-    def movementEvents(self, collisions, event):
-        if event.type == KEYDOWN:
-            if event.key == self.rightKey:
-                self.movingRight = True
-            if event.key == self.leftKey:
-                self.movingLeft = True
-            if event.key == self.upKey:
-                if collisions['bottom']:
-                    self.yMomentum = -15        
-        if event.type == KEYUP:
-            if event.key == self.rightKey:
-                self.movingRight = False
-            if event.key == self.leftKey:
-                self.movingLeft = False
+        # Scale sprite sheets
+        self.idle_sheet = pg.transform.scale(self.idle_sheet, (self.width * 4, self.height))
+        self.running_sheet = pg.transform.scale(self.running_sheet, (self.width * 6, self.height))
+        self.jumping_sheet = pg.transform.scale(self.jumping_sheet, (self.width * 8, self.height))
 
+        # Create dictionary of sprite sheets
+        self.sprites = {
+            'idle': self.idle_sheet,
+            'running': self.running_sheet,
+            'jumping': self.jumping_sheet
+        }
 
-    def getMovement(self):
-        playerMovement = [0,0]
-        if self.movingRight:
-            playerMovement[0] += 5
-        elif self.movingLeft:
-            playerMovement[0] -= 5
-        self.yMomentum += 1
-        if self.yMomentum > 10:
-            self.yMomentum = 10
-        playerMovement[1] += self.yMomentum
-        return playerMovement
-        
+        # Set initial sprite to idle
+        self.state = 'idle'
+        self.sprite_sheet = self.sprites[self.state]
+        self.image = self.get_frame(0)
+        self.rect = self.image.get_rect()
+    
+    #This sets up the controls for the character
+    def move(self):
+        keys = pg.key.get_pressed()
+
+        if keys[pg.K_a] and self.x > self.velocity_x:
+            self.velocity_x = 6
+            self.x -= self.velocity_x
+            self.state = 'running'
+        elif keys[pg.K_d] and self.x < 960 - self.width - self.velocity_x:
+            self.velocity_x = 6
+            self.x += self.velocity_x
+            self.state = 'running'
+        else:
+            self.velocity_x = 0
+            self.state = 'idle'
+
+        # Apply gravity
+        self.velocity_y = min(self.velocity_y + self.gravity, self.max_velocity)
+        self.y += self.velocity_y
+
+        # Check for collisions with the bottom of the screen
+        if self.y > 640 - self.height:
+            self.y = 640 - self.height
+            self.velocity_y = 0
+
+        # Check for jumping
+        if keys[pg.K_w] and self.velocity_y == 0:
+            # calculate x and y velocities for jump
+            self.velocity_y = -self.jump_power * math.sin(self.jump_angle)
+            self.velocity_x = self.jump_power * math.cos(self.jump_angle)
+            self.state = 'jumping'
+
+    def get_frame(self, frame, scale=1):
+        # Calculate position of current frame in sprite sheet
+        x = frame * self.width
+        y = 0
+        rect = pg.Rect(x, y, self.width, self.height)
+        image = pg.Surface(rect.size, pg.SRCALPHA)
+        image.blit(self.sprite_sheet, (0, 0), rect)
+
+        # Scale image
+        width = int(self.width * scale)
+        height = int(self.height * scale)
+        image = pg.transform.scale(image, (width, height))
+
+        return image
+    
+    def draw(self, surface, scale=1):
+        keys = pg.key.get_pressed()
+        # Update sprite image based on current state
+        if self.state == 'idle':
+            self.sprite_sheet = self.idle_sheet
+            frame = (pg.time.get_ticks() // 100) % 4 # animate by cycling through frames every 100ms
+        elif self.state == 'running':
+            self.sprite_sheet = self.running_sheet
+            frame = (pg.time.get_ticks() // 100) % 6 # animate by cycling through frames every 100ms
+        else:
+            self.sprite_sheet = self.jumping_sheet
+            frame = (pg.time.get_ticks() // 100) % 8 # animate by cycling through frames every 100ms
+
+        self.image = self.get_frame(frame, scale)
+
+        # Flip image if player is facing left
+        if keys[pg.K_a]:
+            self.image = pg.transform.flip(self.image, True, False)
+
+        # Scale rect to match scaled image
+        rect = self.image.get_rect()
+        rect.x = int(self.x * scale)
+        rect.y = int(self.y * scale)
+        rect.width = int(rect.width * scale)
+        rect.height = int(rect.height * scale)
+
+        surface.blit(self.image, rect)

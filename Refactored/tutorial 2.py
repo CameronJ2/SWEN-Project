@@ -1,12 +1,23 @@
-P1_moving_right = False
-P1_moving_left = False
-player1_y_momentum = 0
-P1_gravity = 0
+import pygame, sys # import pygame and sys
+
+clock = pygame.time.Clock() # set up the clock
+
+from pygame.locals import * # import pygame modules
+pygame.init() # initiate pygame
+
+pygame.display.set_caption('My Pygame') # set the window name
+
+WINDOW_SIZE = (800,600) # set up window size
+
+screen = pygame.display.set_mode(WINDOW_SIZE,0,32) # initiate screen
+
+display = pygame.Surface((600, 400))
 
 P2_moving_right = False
 P2_moving_left = False
 player2_y_momentum = 0
 P2_gravity = 0
+
 
 
 def collision_test(rect, tiles):

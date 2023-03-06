@@ -19,7 +19,8 @@ rows = 100
 cols = 30
 
 # create an instance of the Player class
-player = Player(x=screen_width//2, y=screen_height//2, width=32, height=32)
+player1 = Player('Refactored\img\Owl_Mon',x=screen_width//2, y=screen_height//2, width=32, height=32)
+player2 = Player('Refactored\img\Pink_Mon',x=screen_width//2, y=screen_height//2, width=32, height=32)
 
 
 #background image
@@ -67,8 +68,8 @@ while run:
                 screen.blit(tile, (col * tile_size, row * tile_size))
 
     # move and draw the player
-    player.move()
-    player.draw(screen)
+    player2.move()
+    player2.draw(screen)
 
     #event handler to close game
     for event in pg.event.get():
