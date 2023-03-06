@@ -2,7 +2,7 @@ import pygame as pg
 import math
 
 class Player:
-    def __init__(self, spritePath, x, y, width, height, scale=2):
+    def __init__(self, spritePath, upkey, leftkey, rightkey, x, y, width, height, scale=2):
         self.x = x
         self.y = y
         self.width = int(width * scale)
@@ -41,11 +41,11 @@ class Player:
     def move(self):
         keys = pg.key.get_pressed()
 
-        if keys[pg.K_a] and self.x > self.velocity_x:
+        if keys[pg.leftkey] and self.x > self.velocity_x:
             self.velocity_x = 6
             self.x -= self.velocity_x
             self.state = 'running'
-        elif keys[pg.K_d] and self.x < 960 - self.width - self.velocity_x:
+        elif keys[pg.rightkey] and self.x < 960 - self.width - self.velocity_x:
             self.velocity_x = 6
             self.x += self.velocity_x
             self.state = 'running'
@@ -63,7 +63,7 @@ class Player:
             self.velocity_y = 0
 
         # Check for jumping
-        if keys[pg.K_w] and self.velocity_y == 0:
+        if keys[pg.upkey] and self.velocity_y == 0:
             # calculate x and y velocities for jump
             self.velocity_y = -self.jump_power * math.sin(self.jump_angle)
             self.velocity_x = self.jump_power * math.cos(self.jump_angle)

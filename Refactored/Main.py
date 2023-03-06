@@ -19,8 +19,8 @@ rows = 100
 cols = 30
 
 # create an instance of the Player class
-player1 = Player('Refactored\img\Owl_Mon',x=screen_width//2, y=screen_height//2, width=32, height=32)
-player2 = Player('Refactored\img\Pink_Mon',x=screen_width//2, y=screen_height//2, width=32, height=32)
+player1 = Player('Refactored\img\Owl_Mon', K_UP, K_LEFT, K_RIGHT, x=screen_width//2, y=screen_height//2, width=32, height=32)
+player2 = Player('Refactored\img\Pink_Mon', K_w, K_a, K_d, x=screen_width//2, y=screen_height//2, width=32, height=32)
 
 
 #background image
