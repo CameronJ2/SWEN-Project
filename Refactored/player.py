@@ -12,7 +12,7 @@ class Player:
         self.max_velocity = 10
         self.gravity = 0.5
         self.jump_power = 20
-        self.jump_angle = math.radians(45) # set jump angle to 45 degrees
+        self.jump_angle = math.radians(30) # set jump angle to 45 degrees
         self.upkey = upkey
         self.leftkey = leftkey
         self.rightkey = rightkey
@@ -27,11 +27,11 @@ class Player:
         self.running_sheet = pg.transform.scale(self.running_sheet, (self.width * 6, self.height))
         self.jumping_sheet = pg.transform.scale(self.jumping_sheet, (self.width * 8, self.height))
 
-        # Create dictionary of sprite sheets
         self.sprites = {
             'idle': self.idle_sheet,
             'running': self.running_sheet,
-            'jumping': self.jumping_sheet
+            'jumping': self.jumping_sheet,
+            'running_and_jumping': self.jumping_sheet
         }
 
         # Set initial sprite to idle
@@ -54,7 +54,8 @@ class Player:
             self.state = 'running'
         else:
             self.velocity_x = 0
-            self.state = 'idle'
+            if self.velocity_y == 0:
+                self.state = 'idle'
 
         # Apply gravity
         self.velocity_y = min(self.velocity_y + self.gravity, self.max_velocity)
@@ -65,12 +66,15 @@ class Player:
             self.y = 640 - self.height
             self.velocity_y = 0
 
-        # Check for jumping
         if keys[self.upkey] and self.velocity_y == 0:
             # calculate x and y velocities for jump
             self.velocity_y = -self.jump_power * math.sin(self.jump_angle)
             self.velocity_x = self.jump_power * math.cos(self.jump_angle)
-            self.state = 'jumping'
+            if self.velocity_x != 0: # check if the player is also running
+                self.state = 'running_and_jumping'
+            else:
+                self.state = 'jumping'
+
 
     def get_frame(self, frame, scale=1):
         # Calculate position of current frame in sprite sheet
@@ -96,9 +100,9 @@ class Player:
         elif self.state == 'running':
             self.sprite_sheet = self.running_sheet
             frame = (pg.time.get_ticks() // 100) % 6 # animate by cycling through frames every 100ms
-        else:
+        elif self.state == 'jumping' or self.state == 'running_and_jumping':
             self.sprite_sheet = self.jumping_sheet
-            frame = (pg.time.get_ticks() // 100) % 8 # animate by cycling through frames every 100ms
+            frame = (pg.time.get_ticks() // 70) % 8 # animate by cycling through frames every 100ms
 
         self.image = self.get_frame(frame, scale)
 
