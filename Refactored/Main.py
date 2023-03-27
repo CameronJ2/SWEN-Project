@@ -36,6 +36,7 @@ Bimg1 = pg.transform.scale(BG1, (1929 * 4, 400 * 4))
 
 # load the tiles from the tile folder
 tile_images = load_tiles('Refactored/level_editor/Tiles/1_Tiles')
+tile_rects = []
 
 # create an empty level
 level = []
