@@ -14,7 +14,7 @@ class Player:
         self.movingRight = False
         self.movingLeft = False
         self.yMomentum = 0
-        self.playerRect.center = (self.x, self.y)
+        self.playerRect.center
         self.upKey = upKey
         self.leftKey = leftKey
         self.rightKey = rightKey

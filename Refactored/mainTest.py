@@ -2,7 +2,7 @@ import pygame as pg
 from pygame import *
 import sys
 from playerTest import Player
-from levelLoader import load_level, load_tiles
+from levelLoaderTest import load_level, load_tiles
 
 clock = pg.time.Clock() # set up the clock
 pg.init() # initiate pygame
@@ -12,8 +12,8 @@ screen_width = 960
 screen_height = 640
 screen = pg.display.set_mode(WINDOW_SIZE,0,32) # initiate screen
 display = pg.Surface((960, 640))
-player1 = Player('Refactored\img\Owl_Mon', K_UP, K_LEFT, K_RIGHT, x=200, y=300)
-player2 = Player('Refactored\img\Pink_Mon', K_w, K_a, K_d, x=200, y=300)
+player1 = Player('Refactored\img\Owl_Mon', K_UP, K_LEFT, K_RIGHT, 200, 300)
+player2 = Player('Refactored\img\Pink_Mon', K_w, K_a, K_d, 300, 300)
 rows = 100
 cols = 30
 
@@ -22,10 +22,13 @@ def collision_test(playerRect, tiles, otherPlayerRect):
     for tile in tiles:
         if playerRect.colliderect(tile):
             hit_list.append(tile)
+            print("Collision detected")  # added print statement
     if playerRect.colliderect(otherPlayerRect):
         hit_list.append(otherPlayerRect)
+        print("Collision detected")  # added print statement
     
     return hit_list
+
 
 def movePlayer(playerRect, movement, tiles, otherPlayerRect):
     collisionTypes = {'bottom': False}
@@ -69,9 +72,12 @@ tile_images = load_tiles('Refactored/level_editor/Tiles/1_Tiles')
 
 # create an empty level
 level = []
+tile_rects = []
 
 # load the level data from file
-level = load_level('Refactored/level.txt', cols, rows)
+level, tile_rects = load_level('Refactored/level.txt', cols, rows)
+
+
 
 # replace the tile indices with tile images in the level data
 for row in range(len(level)):
@@ -86,7 +92,6 @@ while True: # game loop
     screen.blit(Bimg3, (-3000,0))
     screen.blit(Bimg2, (-3000,0))
     screen.blit(Bimg1, (-3000,0))
-    tile_rects = []
     
     # draw the level tiles
     for row in range(len(level)):
