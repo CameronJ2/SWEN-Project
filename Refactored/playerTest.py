@@ -10,7 +10,7 @@ class Player:
                                       #working folder is SWEN-Project, so I can cut out everything before it.
         self.x = x
         self.y = y
-        self.playerRect = pg.Rect(50, 50, 32, 32)
+        self.playerRect = pg.Rect(x, y, 36, 60)
         self.movingRight = False
         self.movingLeft = False
         self.yMomentum = 0
@@ -118,5 +118,10 @@ class Player:
         rect.y = int(self.y * scale)
         rect.width = int(rect.width * scale)
         rect.height = int(rect.height * scale)
+        
+        # Set the x and y attributes of the Player class to the position of the player rectangle
+        self.x = self.playerRect.x
+        self.y = self.playerRect.y
 
-        surface.blit(self.image, rect)
+        # Blit the sprite to the screen using the x and y attributes of the Player class
+        surface.blit(self.image, (self.x-11, self.y-4))

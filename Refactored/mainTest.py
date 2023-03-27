@@ -8,24 +8,22 @@ clock = pg.time.Clock() # set up the clock
 pg.init() # initiate pygame
 pg.display.set_caption('Summit Sprint') # set the window name
 WINDOW_SIZE = (960,640) # set up window size
-screen_width = 960
-screen_height = 640
 screen = pg.display.set_mode(WINDOW_SIZE,0,32) # initiate screen
 display = pg.Surface((960, 640))
-player1 = Player('Refactored\img\Owl_Mon', K_UP, K_LEFT, K_RIGHT, 200, 300)
+player1 = Player('Refactored\img\Owl_Mon', K_UP, K_LEFT, K_RIGHT, 900, 500)
 player2 = Player('Refactored\img\Pink_Mon', K_w, K_a, K_d, 300, 300)
 rows = 100
 cols = 30
+screen_width = 960
+screen_height = 640
 
 def collision_test(playerRect, tiles, otherPlayerRect):
     hit_list = []
     for tile in tiles:
         if playerRect.colliderect(tile):
             hit_list.append(tile)
-            print("Collision detected")  # added print statement
     if playerRect.colliderect(otherPlayerRect):
         hit_list.append(otherPlayerRect)
-        print("Collision detected")  # added print statement
     
     return hit_list
 
@@ -93,6 +91,11 @@ while True: # game loop
     screen.blit(Bimg2, (-3000,0))
     screen.blit(Bimg1, (-3000,0))
     
+    ##### Delete this or comment this out to get rid of the player rectangles
+    pg.draw.rect(screen, (0, 0, 255), player1.playerRect)
+    pg.draw.rect(screen, (0, 0, 255), player2.playerRect)
+
+
     # draw the level tiles
     for row in range(len(level)):
         for col in range(len(level[row])):
