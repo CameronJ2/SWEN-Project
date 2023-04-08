@@ -25,9 +25,9 @@ def draw_grid():
 
 
 #background image
-BG3 = pg.image.load('Free/BG_3/BG_3.png').convert_alpha()
-BG2 = pg.image.load('Free/BG_2/BG_2.png').convert_alpha()
-BG1 = pg.image.load('Free/BG_1/BG_1.png').convert_alpha()
+BG3 = pg.image.load('Jacob_Animations/SummitSprint/Free/BG_3/BG_3.png').convert_alpha()
+BG2 = pg.image.load('Jacob_Animations/SummitSprint/Free/BG_2/BG_2.png').convert_alpha()
+BG1 = pg.image.load('Jacob_Animations/SummitSprint/Free/BG_1/BG_1.png').convert_alpha()
 
 #resizes BG
 Bimg3 = pg.transform.scale(BG3, (1929 * 4, 400 * 4))
