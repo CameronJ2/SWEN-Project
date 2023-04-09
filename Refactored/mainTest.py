@@ -19,23 +19,23 @@ screen_width = 960
 screen_height = 640
 gameOver = 0
 
-def collision_test(playerRect, tiles, otherPlayerRect, lava):
+def collision_test(playerRect, tiles, otherPlayerRect):#):
     hit_list = []
     for tile in tiles:
         if playerRect.colliderect(tile):
             hit_list.append(tile)
     if playerRect.colliderect(otherPlayerRect):
         hit_list.append(otherPlayerRect)
-    if playerRect.colliderect(lava):
-        hit_list.append(lava)
+   # if playerRect.colliderect(lava):
+    #    hit_list.append(lava)
     
     return hit_list
 
 
-def movePlayer(playerRect, movement, tiles, otherPlayerRect, lava):
+def movePlayer(playerRect, movement, tiles, otherPlayerRect):#, lava):
     collisionTypes = {'bottom': False}
     playerRect.x += movement[0]
-    hit_list = collision_test(playerRect, tiles, otherPlayerRect, lava)
+    hit_list = collision_test(playerRect, tiles, otherPlayerRect)#, lava)
     for rect in hit_list:
         if movement[0] > 0:
             playerRect.right = rect.left
@@ -43,7 +43,7 @@ def movePlayer(playerRect, movement, tiles, otherPlayerRect, lava):
             playerRect.left = rect.right
     
     playerRect.y += movement[1]
-    hit_list = collision_test(playerRect, tiles, otherPlayerRect, lava)
+    hit_list = collision_test(playerRect, tiles, otherPlayerRect)#, lava)
     for rect in hit_list:
         if movement[1] > 0:
             playerRect.bottom = rect.top
@@ -87,8 +87,8 @@ for row in range(len(level)):
         tile_index = level[row][col]
         if tile_index != 0:
             level[row][col] = tile_images[tile_index]
-        if tile_index == 61:
-            level[row][col] = tile_images[Lava]
+        #if tile_index == 61:
+         #   level[row][col] = tile_images[Lava]
 
 
 while True: # game loop
@@ -113,8 +113,8 @@ while True: # game loop
     player2_movement = player2.getMovement()
 
     # removed player1_rect variable, pointer to player1.playerRect is passed in and updated, redundant variable.
-    P1_collisions = movePlayer(player1.playerRect, player1_movement, tile_rects, player2.playerRect, Lava) 
-    P2_collisions = movePlayer(player2.playerRect, player2_movement, tile_rects, player1.playerRect, Lava)
+    P1_collisions = movePlayer(player1.playerRect, player1_movement, tile_rects, player2.playerRect)#, Lava) 
+    P2_collisions = movePlayer(player2.playerRect, player2_movement, tile_rects, player1.playerRect)#, Lava)
     
     if P1_collisions['bottom']:
         player1.yMomentum = 0
