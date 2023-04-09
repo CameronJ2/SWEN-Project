@@ -1,7 +1,7 @@
 import pygame as pg
 import math
 from levelLoader import load_level, load_tiles
-from level_editor import Tiles
+from levelLoader import tile_folder
 
 gameOver = 0
 
@@ -68,10 +68,10 @@ class Player:
                 if self.velocity_y == 0:
                     self.state = 'idle'
                 
-            for tile in Tiles:
-                if tile[61].colliderect(self.x, self.velocity_x, self.y, self.width, self.height):
+            for tile in tile_folder:
+                if tile[60].colliderect(self.x, self.velocity_x, self.y, self.width, self.height):
                     self.velocity_x = 0
-                if tile[61].colliderect(self.x, self.velocity_x, self.y, self.width, self.height):
+                if tile[60].colliderect(self.x, self.velocity_x, self.y, self.width, self.height):
                     if self.velocity_y >= 0:
                         self.y = tile[61].top - self.rect.bottom
                         self.velocity_y = 0

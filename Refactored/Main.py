@@ -2,6 +2,7 @@ import pygame as pg
 from player import Player as gPlayer
 from pygame.locals import *
 from levelLoader import load_level, load_tiles
+from lava import Lava
 
 clock = pg.time.Clock()
 
@@ -19,12 +20,13 @@ tile_size= 32
 rows = 100
 cols = 30
 gameOver = 0
-width = 32
-height = 32
+Width = 32
+Height = 32
+lavaGroup = pg.sprite.Group()
 
 # create an instance of the Player class
-player1 = gPlayer('Refactored/img/Owl_Mon', K_UP, K_LEFT, K_RIGHT, screen_width//2, screen_height//2, width, height)
-player2 = gPlayer('Refactored/img/Pink_Mon', K_w, K_a, K_d, screen_width//2, screen_height//2, width, height)
+player1 = gPlayer('Refactored\img\Owl_Mon', K_UP, K_LEFT, K_RIGHT, screen_width//2, screen_height//2, Width, Height)
+player2 = gPlayer('Refactored\img\Pink_Mon', K_w, K_a, K_d, screen_width//2, screen_height//2, Width, Height)
 
 lavaGroup = pg.sprite.Group()
 
@@ -46,7 +48,7 @@ tile_rects = []
 level = []
 
 # load the level data from file
-level = load_level('Refactored/level.txt', cols, rows)
+level = load_level('Refactored/level_editor/level.txt', cols, rows)
 
 # replace the tile indices with tile images in the level data
 for row in range(len(level)):
@@ -54,8 +56,9 @@ for row in range(len(level)):
         tile_index = level[row][col]
         if tile_index != 0:
             level[row][col] = tile_images[tile_index]
-        
-
+        if tile_index == 61:
+                lava = Lava(col * tile_size, row * tile_size + (tile_size // 2))
+                lavaGroup.add(lava)
 run = True
 while run:
 
@@ -82,7 +85,7 @@ while run:
     if gameOver == 0:
         lavaGroup.update()
         
-    gameOver = gPlayer.update(gameOver)
+        gameOver = gPlayer.update(gameOver)
 
 
     #event handler to close game
