@@ -75,6 +75,9 @@ while run:
             tile = level[row][col]
             if tile != 0:
                 screen.blit(tile, (col * tile_size, row * tile_size))
+            if tile_index == 61:
+                lava = Lava(col * tile_size, row * tile_size + (tile_size // 2))
+                lavaGroup.add(lava)
 
     # move and draw the player
     player1.update(gameOver)
