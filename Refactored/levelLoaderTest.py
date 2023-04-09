@@ -16,7 +16,7 @@ tile_folder = 'Refactored/level_editor/Tiles/1_Tiles'
 # Load tiles from tile_folder directory
 def load_tiles(tile_folder):
     tile_images = []
-    for i in range(1, 61):
+    for i in range(1, 62):
         tile_path = os.path.join(tile_folder, f'Tile_{i:02d}.png')
         tile_image = pg.image.load(tile_path).convert_alpha()
         tile_images.append(tile_image)

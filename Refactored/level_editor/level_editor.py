@@ -22,7 +22,7 @@ level = [[0 for x in range(cols)] for y in range(rows)]
 
 # Load tiles from tile_folder directory
 tile_images = []
-for i in range(1, 61):
+for i in range(1, 62):
     tile_path = os.path.join(tile_folder, f'Tile_{i:02d}.png')
     tile_image = pg.image.load(tile_path).convert_alpha()
     tile_images.append(tile_image)
