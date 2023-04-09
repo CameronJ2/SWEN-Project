@@ -3,6 +3,7 @@ from pygame import *
 import sys
 from playerTest import Player
 from levelLoaderTest import load_level, load_tiles
+from lava import Lava
 
 clock = pg.time.Clock() # set up the clock
 pg.init() # initiate pygame
@@ -10,28 +11,31 @@ pg.display.set_caption('Summit Sprint') # set the window name
 WINDOW_SIZE = (960,640) # set up window size
 screen = pg.display.set_mode(WINDOW_SIZE,0,32) # initiate screen
 display = pg.Surface((960, 640))
-player1 = Player('Refactored\img\Owl_Mon', K_UP, K_LEFT, K_RIGHT, 900, 500)
-player2 = Player('Refactored\img\Pink_Mon', K_w, K_a, K_d, 300, 300)
+player1 = Player('Refactored/img/Owl_Mon', K_UP, K_LEFT, K_RIGHT, 900, 500)
+player2 = Player('Refactored/img/Pink_Mon', K_w, K_a, K_d, 300, 300)
 rows = 100
 cols = 30
 screen_width = 960
 screen_height = 640
+gameOver = 0
 
-def collision_test(playerRect, tiles, otherPlayerRect):
+def collision_test(playerRect, tiles, otherPlayerRect, lava):
     hit_list = []
     for tile in tiles:
         if playerRect.colliderect(tile):
             hit_list.append(tile)
     if playerRect.colliderect(otherPlayerRect):
         hit_list.append(otherPlayerRect)
+    if playerRect.colliderect(lava):
+        hit_list.append(lava)
     
     return hit_list
 
 
-def movePlayer(playerRect, movement, tiles, otherPlayerRect):
+def movePlayer(playerRect, movement, tiles, otherPlayerRect, lava):
     collisionTypes = {'bottom': False}
     playerRect.x += movement[0]
-    hit_list = collision_test(playerRect, tiles, otherPlayerRect)
+    hit_list = collision_test(playerRect, tiles, otherPlayerRect, lava)
     for rect in hit_list:
         if movement[0] > 0:
             playerRect.right = rect.left
@@ -39,7 +43,7 @@ def movePlayer(playerRect, movement, tiles, otherPlayerRect):
             playerRect.left = rect.right
     
     playerRect.y += movement[1]
-    hit_list = collision_test(playerRect, tiles, otherPlayerRect)
+    hit_list = collision_test(playerRect, tiles, otherPlayerRect, lava)
     for rect in hit_list:
         if movement[1] > 0:
             playerRect.bottom = rect.top
@@ -73,7 +77,7 @@ level = []
 tile_rects = []
 
 # load the level data from file
-level, tile_rects = load_level('Refactored/level.txt', cols, rows)
+level, tile_rects = load_level('Refactored/level_editor/level.txt', cols, rows)
 
 
 
@@ -83,6 +87,8 @@ for row in range(len(level)):
         tile_index = level[row][col]
         if tile_index != 0:
             level[row][col] = tile_images[tile_index]
+        if tile_index == 61:
+            level[row][col] = tile_images[Lava]
 
 
 while True: # game loop
@@ -107,8 +113,8 @@ while True: # game loop
     player2_movement = player2.getMovement()
 
     # removed player1_rect variable, pointer to player1.playerRect is passed in and updated, redundant variable.
-    P1_collisions = movePlayer(player1.playerRect, player1_movement, tile_rects, player2.playerRect) 
-    P2_collisions = movePlayer(player2.playerRect, player2_movement, tile_rects, player1.playerRect)
+    P1_collisions = movePlayer(player1.playerRect, player1_movement, tile_rects, player2.playerRect, Lava) 
+    P2_collisions = movePlayer(player2.playerRect, player2_movement, tile_rects, player1.playerRect, Lava)
     
     if P1_collisions['bottom']:
         player1.yMomentum = 0
