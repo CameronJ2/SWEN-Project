@@ -1,9 +1,9 @@
 import pygame as pg
 from pygame import *
-import sys
+import sys, os
 from playerTest import Player
 from levelLoaderTest import load_level, load_tiles
-from lava import Lava
+#from levelLoaderTest import load_kill
 
 clock = pg.time.Clock() # set up the clock
 pg.init() # initiate pygame
@@ -18,31 +18,40 @@ cols = 30
 screen_width = 960
 screen_height = 640
 gameOver = 0
+killTile = ('Refactored/level_editor/Tiles/5 kill_Tiles/Tile_60.png')
 
-def collision_test(playerRect, tiles, otherPlayerRect):#):
+def collision_test(playerRect, tiles, otherPlayerRect, killTiles):
     hit_list = []
     for tile in tiles:
         if playerRect.colliderect(tile):
             hit_list.append(tile)
-    if playerRect.colliderect(otherPlayerRect):
-        hit_list.append(otherPlayerRect)
-   # if playerRect.colliderect(lava):
-    #    hit_list.append(lava)
+        if playerRect.colliderect(otherPlayerRect):
+            hit_list.append(otherPlayerRect)
+        if playerRect.colliderect(killTiles):
+            hit_list.append(killTiles)
     
     return hit_list
 
 
-def movePlayer(playerRect, movement, tiles, otherPlayerRect):#, lava):
+def movePlayer(playerRect, movement, tiles, otherPlayerRect, killTiles, gameOver):
     collisionTypes = {'bottom': False}
     playerRect.x += movement[0]
-    hit_list = collision_test(playerRect, tiles, otherPlayerRect)#, lava)
+    kill_list = collision_test(killTiles)
+    hit_list = collision_test(playerRect, tiles, otherPlayerRect)
     for rect in hit_list:
         if movement[0] > 0:
             playerRect.right = rect.left
         elif movement[0] < 0:
             playerRect.left = rect.right
+    for rect in kill_list:
+        if movement[0] > 0:
+            playerRect.right = rect.left
+        elif movement[0] < 0:
+            playerRect.left = rect.right
+            gameOver = -1
     
     playerRect.y += movement[1]
+    kill_list = collision_test(killTiles)
     hit_list = collision_test(playerRect, tiles, otherPlayerRect)#, lava)
     for rect in hit_list:
         if movement[1] > 0:
@@ -54,10 +63,22 @@ def movePlayer(playerRect, movement, tiles, otherPlayerRect):#, lava):
     #Note: uses player1 dimensions, so try to keep all playermodels the same dimensions or come back and change this later to be more general
     lowerSensor = pg.Rect(playerRect.x, playerRect.bottom, 32, 1) 
     lowerSensorHitList = collision_test(lowerSensor, tiles, otherPlayerRect)
+    lowerSensorKillList = collision_test(lowerSensor,killTiles)
     if len(lowerSensorHitList) > 0:
         collisionTypes['bottom'] = True
+    #if len(lowerSensorKillList) < 0:
+     #   collisionTypes['bottom'] = True
+      #  gameOver = -1
 
-    return collisionTypes
+    return collisionTypes, gameOver
+
+def load_kill (tile_kill):
+    tile_Images = []
+    for i in range(0, 3):
+        tile_Path = os.path.join(tile_kill, f'Tile_60.png')
+        Tile_image = pg.image.load(tile_Path).convert_alpha()
+        tile_Images.append(Tile_image)
+    return tile_Images
 
 #background image
 BG3 = pg.image.load('Refactored/Free/BG_3/BG_3.png').convert_alpha()
@@ -71,6 +92,7 @@ Bimg1 = pg.transform.scale(BG1, (1929 * 4, 400 * 4))
 
 # load the tiles from the tile folder
 tile_images = load_tiles('Refactored/level_editor/Tiles/1_Tiles')
+tile_Images = load_kill('Refactored/level_editor/Tiles/5 kill_Tiles')
 
 # create an empty level
 level = []
@@ -87,8 +109,8 @@ for row in range(len(level)):
         tile_index = level[row][col]
         if tile_index != 0:
             level[row][col] = tile_images[tile_index]
-        #if tile_index == 61:
-         #   level[row][col] = tile_images[Lava]
+        #if tile_index == 60:
+            #level[row][col] = tile_Images[tile_index]
 
 
 while True: # game loop
@@ -108,6 +130,8 @@ while True: # game loop
             tile = level[row][col]
             if tile != 0:
                 screen.blit(tile, (col * 32, row * 32))
+            #if tile == 61:
+            #    screen.blit(killTile, (col * 32, row * 32))
                 
     player1_movement = player1.getMovement()
     player2_movement = player2.getMovement()
