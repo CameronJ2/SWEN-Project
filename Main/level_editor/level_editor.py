@@ -15,7 +15,7 @@ pg.display.set_caption('Level Editor')
 tile_size = 32
 rows = 100
 cols = 30
-tile_folder = 'Refactored/level_editor/Tiles/1_Tiles'
+tile_folder = 'Main/level_editor/Tiles/1_Tiles'
 
 # Create an empty level with no tiles
 level = [[0 for x in range(cols)] for y in range(rows)]
