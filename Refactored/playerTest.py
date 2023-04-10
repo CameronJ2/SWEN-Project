@@ -56,7 +56,7 @@ class Player:
                 self.state = 'running'
             if event.key == self.upKey:
                 if collisions['bottom']:
-                    self.yMomentum = -15
+                    self.yMomentum = -18
                     self.state = 'jumping'        
         if event.type == KEYUP:
             if event.key == self.rightKey:

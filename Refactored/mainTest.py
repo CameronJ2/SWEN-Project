@@ -10,8 +10,8 @@ pg.display.set_caption('Summit Sprint') # set the window name
 WINDOW_SIZE = (960,640) # set up window size
 screen = pg.display.set_mode(WINDOW_SIZE,0,32) # initiate screen
 display = pg.Surface((960, 640))
-player1 = Player('Refactored\img\Owl_Mon', K_UP, K_LEFT, K_RIGHT, 900, 500)
-player2 = Player('Refactored\img\Pink_Mon', K_w, K_a, K_d, 300, 300)
+player1 = Player('Refactored\img\Owl_Mon', K_UP, K_LEFT, K_RIGHT, 150, 500)
+player2 = Player('Refactored\img\Pink_Mon', K_w, K_a, K_d, 100, 500)
 rows = 100
 cols = 30
 screen_width = 960
@@ -84,8 +84,13 @@ for row in range(len(level)):
         if tile_index != 0:
             level[row][col] = tile_images[tile_index]
 
-
+    camera_y = 2560
+    old_camera_y = 2560
+    target_camera_y = 2560
+    
 while True: # game loop
+    tile_rects = []  # Clear tile_rects
+
     #loads images to screen
     screen.blit(Bimg3, (-3000,0))
     screen.blit(Bimg2, (-3000,0))
@@ -94,15 +99,30 @@ while True: # game loop
     ##### Delete this or comment this out to get rid of the player rectangles
     pg.draw.rect(screen, (0, 0, 255), player1.playerRect)
     pg.draw.rect(screen, (0, 0, 255), player2.playerRect)
+    
+    
+    if player1.playerRect.top < 10:
+        if camera_y > 100:  # only move camera if it hasn't reached the top of the level
+            target_camera_y -= 100
 
 
-    # draw the level tiles
+
+    # move the camera towards the target position
+    camera_y += (target_camera_y - camera_y) * 0.1  # adjust the 0.1 to control the speed of the camera movement
+    
+    # update player positions based on camera movement
+    player1.playerRect.y -= (camera_y - old_camera_y)
+    player2.playerRect.y -= (camera_y - old_camera_y)
+    old_camera_y = camera_y
+
+    # draw the level tiles and update tile_rects
     for row in range(len(level)):
         for col in range(len(level[row])):
             tile = level[row][col]
             if tile != 0:
-                screen.blit(tile, (col * 32, row * 32))
-                
+                tile_rects.append(pg.Rect(col * 32, row * 32 - camera_y, 32, 32))
+                screen.blit(tile, (col * 32, row * 32 - camera_y))
+                                
     player1_movement = player1.getMovement()
     player2_movement = player2.getMovement()
 
@@ -129,5 +149,5 @@ while True: # game loop
             player1.movementEvents(P1_collisions, event)
             player2.movementEvents(P2_collisions, event)
 
-    pg.display.update() # update display
+    pg.display.update() # update display  
     clock.tick(60) # maintain 60 fps
