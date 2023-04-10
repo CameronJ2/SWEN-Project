@@ -1,0 +1,311 @@
+import pygame, sys
+from pygame.locals import * 
+
+pygame.init()
+
+clock = pygame.time.Clock()
+fps = 60
+
+width = 1000
+height = 800
+
+screen = pygame.display.set_mode((width, height))
+pygame.display.set_caption('My Pygame')
+
+#game variables
+tileSize = 32
+gameOver = 0
+gameOver1 = 0
+level = 1
+
+#define colors
+#white = (255, 255, 255)
+
+#images
+dirt = pygame.image.load('MyAssets/dirt.png')
+grass = pygame.image.load('MyAssets/grass.png')
+player01 = pygame.image.load('MyAssets/Pink_Monster.png')
+player02 = pygame.image.load('MyAssets/Pink_Monster.png')
+        
+class Player1():
+    def __init__(self, x, y):
+        self.deadImage = pygame.image.load('MyAssets/ghost.png')
+        self.image = player01
+        player01.set_colorkey((255, 255, 255))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
+        self.yMomentum = 0
+        self.direction = 0
+        
+    def update(self, gameOver):
+        playerMomentum = 0
+        gravity = 0
+        
+        if gameOver == 0:
+            #key presses
+            key = pygame.key.get_pressed()
+            if key[pygame.K_UP]:
+                if gravity < 20:
+                    self.yMomentum = -6
+            if key[pygame.K_RIGHT]:
+                playerMomentum += 3
+            if key[pygame.K_LEFT]:
+                playerMomentum -= 3
+        
+            #add gravity
+            self.yMomentum += 0.2
+            if self.yMomentum > 3:
+                    self.yMomentum = 5
+            gravity += self.yMomentum
+            
+            #check for collision
+            for tile in game.hitList:
+                if tile[1].colliderect(self.rect.x + playerMomentum, self.rect.y, self.width, self.height):
+                        playerMomentum = 0
+                if tile[1].colliderect(self.rect.x + playerMomentum, self.rect.y, self.width, self.height):
+                    if self.yMomentum < 0:
+                        gravity = tile[1].bottom - self.rect.top
+                        self.yMomentum = 0
+                    elif self.yMomentum >= 0:
+                        gravity = tile[1].top - self.rect.bottom
+                        self.yMomentum = 0
+            
+            #check collision with lava
+            if pygame.sprite.spritecollide(self, lavaGroup, False):
+                gameOver = -1
+                
+            #check collision with spikes
+            if pygame.sprite.spritecollide(self, waterGroup, False):
+                gameOver = -1
+        
+            #update player coordinates
+            self.rect.x += playerMomentum
+            self.rect.y += gravity
+        
+            if self.rect.bottom > height:
+                self.rect.bottom = height
+                gravity = 0
+        
+        elif gameOver == -1:
+            self.image = self.deadImage
+            if self.rect.y < 200:
+                self.rect.y-= 5
+            
+        #draw player onto screen
+        screen.blit(self.image, self.rect)
+        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+        
+        return gameOver
+        
+class Player2:
+        def __init__(self1, x, y):
+                self1.deadImage = pygame.image.load('MyAssets/ghost.png')
+                self1.image = player02
+                player02.set_colorkey((255, 255, 255))
+                self1.rect = self1.image.get_rect()
+                self1.rect.x = x
+                self1.rect.y = y
+                self1.width = self1.image.get_width()
+                self1.height = self1.image.get_height()
+                self1.yMomentum = 0
+                self1.direction = 0
+            
+        def update(self1):
+                playerMomentum = [0, 0]
+                gravity = 0
+            
+                if gameOver1 == 0:
+                    #key presses
+                    key = pygame.key.get_pressed()
+                    if key[pygame.K_w]:
+                            self1.yMomentum = -6
+                    if key[pygame.K_d]:
+                            playerMomentum += 3
+                    if key[pygame.K_a]:
+                            playerMomentum -= 3
+                    
+                    #add gravity
+                    self1.yMomentum += 0.2
+                    if self1.yMomentum < 20:
+                            self1.yMomentum = -6
+                    gravity += self1.yMomentum
+                        
+                    #check for collision
+                    for tile in game.hitList:
+                            if tile[1].colliderect(self1.rect.x + playerMomentum, self1.rect.y, self1.width, self1.height):
+                                    playerMomentum = 0
+                            if tile[1].colliderect(self1.rect.x + playerMomentum, self1.rect.y, self1.width, self1.height):
+                                    if self1.yMomentum < 0:
+                                            gravity = tile[1].bottom - self1.rect.top
+                                            self1.yMomentum = 0
+                                    elif self1.yMomentum >= 0:
+                                            gravity = tile[1].top - self1.rect.bottom
+                                            gravity = 0
+                    
+                    #check collision with lava
+                    if pygame.sprite.spritecollide(self1, lavaGroup, False):
+                            gameOver1 = -1
+                    
+                    #update player coordinates
+                    self1.rect.x += playerMomentum
+                    self1.rect.y += gravity
+                    
+                    if self1.rect.bottom > height:
+                            self1.rect.bottom = height
+                            gravity = 0
+                        
+                elif gameOver1 == -1:
+                        self1.image = self1.deadImage
+                        if self1.rect.y > 200:
+                                self1.rect.y-= 5
+                    
+                #draw player onto screen
+                screen.blit(self1.image, self1.rect)
+                pygame.draw.rect(screen, (255, 255, 255), self1.rect, 2)
+                
+                return gameOver1
+                
+class Game():
+    def __init__(self, data):
+        self.hitList = []
+            
+        #images
+        dirt = pygame.image.load('MyAssets/dirt.png')
+        grass = pygame.image.load('MyAssets/grass.png')
+            
+        rowCount = 0
+        for row in data:
+            columnCount = 0
+            for tile in row:
+                if tile == 1:
+                    image = pygame.transform.scale(dirt, (tileSize, tileSize))
+                    imageRect = image.get_rect()
+                    imageRect.x = columnCount * tileSize
+                    imageRect.y = rowCount * tileSize
+                    tile = (image, imageRect)
+                    self.hitList.append(tile)
+                if tile == 2:
+                    image = pygame.transform.scale(grass, (tileSize, tileSize))
+                    imageRect = image.get_rect()
+                    imageRect.x = columnCount * tileSize
+                    imageRect.y = rowCount * tileSize
+                    tile = (image, imageRect)
+                    self.hitList.append(tile)
+                if tile == 3:
+                    lava = Lava(columnCount * tileSize, rowCount * tileSize + (tileSize // 2))
+                    lavaGroup.add(lava)
+                if tile == 4:
+                    water = Water(columnCount * tileSize, rowCount * tileSize + (tileSize // 2))
+                    waterGroup.add(water)
+                
+                columnCount += 1
+            rowCount += 1
+        
+    def draw(self):
+        for tile in self.hitList:
+            screen.blit(tile[0], tile[1])
+            pygame.draw.rect(screen, (255, 255, 255), tile[1], 2)
+                        
+class Lava(pygame.sprite.Sprite):
+    def __init__(self,x, y):
+        pygame.sprite.Sprite.__init__(self)
+        waterImage = pygame.image.load('MyAssets/lava.png')
+        self.image = pygame.transform.scale(waterImage, (tileSize, tileSize // 2))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        
+class Water(pygame.sprite.Sprite):
+    def __init__(self,x, y):
+        pygame.sprite.Sprite.__init__(self)
+        lavaImage = pygame.image.load('MyAssets/liquidWater01.png')
+        self.image = pygame.transform.scale(lavaImage, (tileSize, tileSize // 2))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        
+
+            
+gameMap = [
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 0, 0, 0, 0, 2, 2, 2, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+    ]
+
+player1 = Player1(100, height - 130)
+player2 = Player2(100, height - 130)
+
+#greating sprites and groups
+lavaGroup = pygame.sprite.Group()
+waterGroup = pygame.sprite.Group()
+spikeGroup = pygame.sprite.Group()
+#BigSpikeGroup = pygame.sprite.Group()
+#TrapGroup = pygame.sprite.Group()
+
+
+game = Game(gameMap)
+
+play = True
+while play:
+    
+    clock.tick(fps)
+    
+    screen.fill((146,244,255))
+    #screen.blit(dirt, (0, 0))
+    #screen.blit(grass, (100, 100))
+    
+    game.draw()
+    
+    if gameOver == 0:
+        lavaGroup.update()
+        waterGroup.update()
+        #spikeGroup.update()
+        #BigSpikeGroup.update(0.035)
+    
+    if gameOver1 == 0:
+        lavaGroup.update()
+        waterGroup.update()
+        #spikeGroup.update()
+        #BigSpikeGroup.update(0.035)
+    
+    lavaGroup.draw(screen)
+    waterGroup.draw(screen)
+    #spikeGroup.draw(screen)
+    #BigSpikeGroup.draw(screen)
+    
+    gameOver = player1.update(gameOver)
+    #gameOver1 = player2.update(gameOver1)
+    
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            play = False
+                
+    pygame.display.update()
+    
+pygame.quit()
