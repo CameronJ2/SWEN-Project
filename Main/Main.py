@@ -91,9 +91,9 @@ for row in range(len(level)):
         if tile_index != 0:
             level[row][col] = tile_images[tile_index]
 
-    camera_y = 2560
-    old_camera_y = 2560
-    target_camera_y = 2560
+camera_y = 2560
+old_camera_y = 2560
+target_camera_y = 2560
     
 while True: # game loop
     tile_rects = []  # Clear tile_rects
@@ -107,12 +107,12 @@ while True: # game loop
     pg.draw.rect(screen, (0, 0, 255), player1.playerRect)
     pg.draw.rect(screen, (0, 0, 255), player2.playerRect)
      
-    if player1.playerRect.top < 10 or player2.playerRect.top < 10:
+    if player1.playerRect.top < 50 or player2.playerRect.top < 50:
         if camera_y > 100:  # only move camera if it hasn't reached the top of the level
-            target_camera_y -= 100
+            target_camera_y -= 250
 
     # move the camera towards the target position
-    camera_y += (target_camera_y - camera_y) * 0.1  # adjust the 0.1 to control the speed of the camera movement
+    camera_y += (target_camera_y - camera_y) * 0.25  # adjust the 0.1 to control the speed of the camera movement
     
     # update player positions based on camera movement
     player1.playerRect.y -= (camera_y - old_camera_y)
