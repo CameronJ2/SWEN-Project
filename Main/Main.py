@@ -31,6 +31,13 @@ def collision_test(playerRect, tiles, otherPlayerRect):
 def movePlayer(playerRect, movement, tiles, otherPlayerRect):
     collisionTypes = {'bottom': False}
     playerRect.x += movement[0]
+    
+    # check for collisions with the left and right side of the screen
+    if playerRect.left < 0:
+        playerRect.left = 0
+    elif playerRect.right > screen_width:
+        playerRect.right = screen_width
+    
     hit_list = collision_test(playerRect, tiles, otherPlayerRect)
     for rect in hit_list:
         if movement[0] > 0:
@@ -75,8 +82,6 @@ tile_rects = []
 # load the level data from file
 level, tile_rects = load_level('Main/level.txt', cols, rows)
 
-
-
 # replace the tile indices with tile images in the level data
 for row in range(len(level)):
     for col in range(len(level[row])):
@@ -99,13 +104,10 @@ while True: # game loop
     ##### Delete this or comment this out to get rid of the player rectangles
     pg.draw.rect(screen, (0, 0, 255), player1.playerRect)
     pg.draw.rect(screen, (0, 0, 255), player2.playerRect)
-    
-    
-    if player1.playerRect.top < 10:
+     
+    if player1.playerRect.top < 10 or player2.playerRect.top < 10:
         if camera_y > 100:  # only move camera if it hasn't reached the top of the level
             target_camera_y -= 100
-
-
 
     # move the camera towards the target position
     camera_y += (target_camera_y - camera_y) * 0.1  # adjust the 0.1 to control the speed of the camera movement
