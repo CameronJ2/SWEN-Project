@@ -3,6 +3,10 @@ from pygame.locals import *
 import sys
 #from pygame.locals import * # import pygame modules
 
+gameOver = 0
+
+lavaGroup = pg.sprite.Group()
+
 class Player:
     def __init__(self, spritePath, upKey, leftKey, rightKey, x, y): #relative path here refers to the path in your filesystem to the asset. For me and my repository, it's: Main\Assets\Pink_Monster.png
                                       #Keep in mind you don't have to type the FULL path. Relative path starts at your working folder instead of your drive.
@@ -24,9 +28,9 @@ class Player:
         self.height = 32 * 2
 
         # Load sprite sheets
-        self.idle_sheet = pg.image.load(spritePath + '/Idle_4.png').convert_alpha()
-        self.running_sheet = pg.image.load(spritePath + '/Run_6.png').convert_alpha()
-        self.jumping_sheet = pg.image.load(spritePath + '/Jump_8.png').convert_alpha()
+        self.idle_sheet = pg.image.load('Refactored/img/Owl_Mon/Idle_4.png').convert_alpha()
+        self.running_sheet = pg.image.load('Refactored/img/Owl_Mon/Run_6.png').convert_alpha()
+        self.jumping_sheet = pg.image.load('Refactored/img/Owl_Mon/Jump_8.png').convert_alpha()
 
         # Scale sprite sheets
         self.idle_sheet = pg.transform.scale(self.idle_sheet, (self.width * 4, self.height))
@@ -47,24 +51,25 @@ class Player:
         self.rect = self.image.get_rect()
 
     def movementEvents(self, collisions, event):
-        if event.type == KEYDOWN:
-            if event.key == self.rightKey:
-                self.movingRight = True
-                self.state = 'running'
-            if event.key == self.leftKey:
-                self.movingLeft = True
-                self.state = 'running'
-            if event.key == self.upKey:
-                if collisions['bottom']:
-                    self.yMomentum = -15
-                    self.state = 'jumping'        
-        if event.type == KEYUP:
-            if event.key == self.rightKey:
-                self.movingRight = False
-                self.state = 'idle'
-            if event.key == self.leftKey:
-                self.movingLeft = False
-                self.state = 'idle'
+        if gameOver == 0:
+            if event.type == KEYDOWN:
+                if event.key == self.rightKey:
+                    self.movingRight = True
+                    self.state = 'running'
+                if event.key == self.leftKey:
+                    self.movingLeft = True
+                    self.state = 'running'
+                if event.key == self.upKey:
+                    if collisions['bottom']:
+                        self.yMomentum = -15
+                        self.state = 'jumping'        
+            if event.type == KEYUP:
+                if event.key == self.rightKey:
+                    self.movingRight = False
+                    self.state = 'idle'
+                if event.key == self.leftKey:
+                    self.movingLeft = False
+                    self.state = 'idle'
 
     def getMovement(self):
         playerMovement = [0,0]
@@ -125,3 +130,6 @@ class Player:
 
         # Blit the sprite to the screen using the x and y attributes of the Player class
         surface.blit(self.image, (self.x-11, self.y-4))
+        
+        if pg.sprite.spritecollide(self, lavaGroup, False):
+            gameOver = -1

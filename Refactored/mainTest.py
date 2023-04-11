@@ -146,6 +146,14 @@ while True: # game loop
     if P2_collisions['bottom']:
         player2.yMomentum = 0
 
+    if P1_collisions['tile_kill']
+        player1.yMomentum = 0
+        gameOver = -1
+        
+    if P2_collisions['tile_kill']
+        player2.yMomentum = 0
+        gameOver = -1
+        
     #draw the player
     player1.draw(screen)
     player2.draw(screen)    

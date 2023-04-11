@@ -1,7 +1,8 @@
 import pygame as pg
-from player import Player as gPlayer
-from pygame.locals import *
-from levelLoader import load_level, load_tiles
+from pygame import *
+import sys
+from playerTest import Player as gPlayer
+from levelLoaderTest import load_level, load_tiles
 from lava import Lava
 
 clock = pg.time.Clock()

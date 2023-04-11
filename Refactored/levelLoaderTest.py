@@ -12,15 +12,25 @@ screen = pg.display.set_mode((screen_width, screen_height))
 # Define game variables 
 tile_size = 32
 tile_folder = 'Refactored/level_editor/Tiles/1_Tiles'
+tile_kill = 'Refactored/level_editor/Tiles/5 kill_Tiles'
 
 # Load tiles from tile_folder directory
 def load_tiles(tile_folder):
     tile_images = []
-    for i in range(1, 61):
+    for i in range(1, 65):
         tile_path = os.path.join(tile_folder, f'Tile_{i:02d}.png')
         tile_image = pg.image.load(tile_path).convert_alpha()
         tile_images.append(tile_image)
     return tile_images
+
+#load kill tiles
+def load_kill (tile_kill):
+    tile_Images = []
+    for i in range(1, 3):
+        tile_Path = os.path.join(tile_kill, f'Tile_{i:00d}.png')
+        Tile_image = pg.image.load(tile_Path).convert_alpha()
+        tile_Images.append(Tile_image)
+    return tile_Images
 
 # Load level from a file
 def load_level(level_path, cols, rows):

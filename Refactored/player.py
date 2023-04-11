@@ -69,9 +69,9 @@ class Player:
                     self.state = 'idle'
                 
             for tile in tile_folder:
-                if tile[3].colliderect(self.x, self.velocity_x, self.y, self.width, self.height):
+                if tile.colliderect(self.x, self.velocity_x, self.y, self.width, self.height):
                     self.velocity_x = 0
-                if tile[3].colliderect(self.x, self.velocity_x, self.y, self.width, self.height):
+                if tile.colliderect(self.x, self.velocity_x, self.y, self.width, self.height):
                     if self.velocity_y >= 0:
                         self.y = tile[61].top - self.rect.bottom
                         self.velocity_y = 0
