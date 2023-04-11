@@ -10,8 +10,8 @@ pg.display.set_caption('Summit Sprint') # set the window name
 WINDOW_SIZE = (960,640) # set up window size
 screen = pg.display.set_mode(WINDOW_SIZE,0,32) # initiate screen
 display = pg.Surface((960, 640))
-player1 = Player('Main\img\Owl_Mon', K_UP, K_LEFT, K_RIGHT, 150, 500)
-player2 = Player('Main\img\Pink_Mon', K_w, K_a, K_d, 100, 500)
+player1 = Player('Main\img\Owl_Mon', K_UP, K_LEFT, K_DOWN, K_RIGHT, 150, 500)
+player2 = Player('Main\img\Pink_Mon', K_w, K_a, K_s, K_d, 100, 500)
 rows = 100
 cols = 30
 screen_width = 960
@@ -29,13 +29,15 @@ def collision_test(playerRect, tiles, otherPlayerRect):
 
 
 def movePlayer(playerRect, movement, tiles, otherPlayerRect):
-    collisionTypes = {'bottom': False}
+    collisionTypes = {'bottom': False, 'left': False, 'right': False}
     playerRect.x += movement[0]
     hit_list = collision_test(playerRect, tiles, otherPlayerRect)
     for rect in hit_list:
         if movement[0] > 0:
             playerRect.right = rect.left
+            collisionTypes['right'] = True
         elif movement[0] < 0:
+            collisionTypes['left'] = True
             playerRect.left = rect.right
     
     playerRect.y += movement[1]
@@ -146,8 +148,8 @@ while True: # game loop
             sys.exit() # stop script
 
         if event.type == KEYDOWN or event.type == KEYUP:
-            player1.movementEvents(P1_collisions, event)
-            player2.movementEvents(P2_collisions, event)
+            player1.movementEvents(P1_collisions, event, player2)
+            player2.movementEvents(P2_collisions, event, player1)
 
     pg.display.update() # update display  
     clock.tick(60) # maintain 60 fps

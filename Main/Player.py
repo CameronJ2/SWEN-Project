@@ -4,7 +4,7 @@ import sys
 #from pygame.locals import * # import pygame modules
 
 class Player:
-    def __init__(self, spritePath, upKey, leftKey, rightKey, x, y): #relative path here refers to the path in your filesystem to the asset. For me and my repository, it's: Main\Assets\Pink_Monster.png
+    def __init__(self, spritePath, upKey, leftKey, downkey, rightKey, x, y): #relative path here refers to the path in your filesystem to the asset. For me and my repository, it's: Main\Assets\Pink_Monster.png
                                       #Keep in mind you don't have to type the FULL path. Relative path starts at your working folder instead of your drive.
                                       #for instance, the absolute (full) path for me is: H:\Projects\SWEN-Project\Main\Assets\Pink_Monster.png, but my 
                                       #working folder is SWEN-Project, so I can cut out everything before it.
@@ -17,6 +17,7 @@ class Player:
         self.playerRect.center
         self.upKey = upKey
         self.leftKey = leftKey
+        self.downkey = downkey
         self.rightKey = rightKey
         
         # The 32 is the tile size and the 2 is the scale
@@ -46,7 +47,7 @@ class Player:
         self.image = self.get_frame(0)
         self.rect = self.image.get_rect()
 
-    def movementEvents(self, collisions, event):
+    def movementEvents(self, collisions, event, otherPlayer):
         if event.type == KEYDOWN:
             if event.key == self.rightKey:
                 self.movingRight = True
@@ -58,6 +59,13 @@ class Player:
                 if collisions['bottom']:
                     self.yMomentum = -18
                     self.state = 'jumping'        
+            if event.key == self.downkey:
+                otherPlayer.yMomentum = -10
+                if collisions['right']:
+                    otherPlayer.movingRight = True
+                if collisions['left']:
+                    otherPlayer.movingLeft = True
+
         if event.type == KEYUP:
             if event.key == self.rightKey:
                 self.movingRight = False
