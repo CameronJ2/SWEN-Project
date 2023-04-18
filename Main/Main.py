@@ -58,41 +58,42 @@ def PlayerCollisionTest(playerRect, otherPlayerRect):
     
 
 
-def MovePlayer(playerRect, movement, tiles, otherPlayerRect):
+def MovePlayer(P1, movement, tiles, P2):
     collisionTypes = {'bottom': False, 'left': False, 'right': False}
-    playerRect.x += movement[0]
+    P1.playerRect.x += movement[0]
     
     # check for collisions with the left and right side of the screen
-    if playerRect.left < 0:
-        playerRect.left = 0
-    elif playerRect.right > screen_width:
-        playerRect.right = screen_width
+    if P1.playerRect.left < 0:
+        P1.playerRect.left = 0
+    elif P1.playerRect.right > screen_width:
+        P1.playerRect.right = screen_width
 
-    # check for collision with bottom of the screen (will eventually toggle next map / score screen). Here we write the logic to trigger score screen/next map
-    if playerRect.top >= killZone.bottom:
-        time.wait(1000)
+    # check for collision with bottom of the screen (will eventually toggle next map / score screen). 
+    if P1.playerRect.top >= killZone.bottom:
+        print("GAME!")
+        # Here we write the logic to trigger score screen/next map
 
-    hit_list = BasicCollisionTest(playerRect, tiles, otherPlayerRect)
+    hit_list = BasicCollisionTest(P1.playerRect, tiles, P2.playerRect)
     for rect in hit_list:
         if movement[0] > 0:
-            playerRect.right = rect.left
+            P1.playerRect.right = rect.left
             #collisionTypes['right'] = True
         elif movement[0] < 0:
             #collisionTypes['left'] = True
-            playerRect.left = rect.right
+            P1.playerRect.left = rect.right
     
-    playerRect.y += movement[1]
-    hit_list = BasicCollisionTest(playerRect, tiles, otherPlayerRect)
+    P1.playerRect.y += movement[1]
+    hit_list = BasicCollisionTest(P1.playerRect, tiles, P2.playerRect)
     for rect in hit_list:
         if movement[1] > 0:
-            playerRect.bottom = rect.top
+            P1.playerRect.bottom = rect.top
         elif movement[1] < 0: 
-            playerRect.top = rect.bottom
+            P1.playerRect.top = rect.bottom
             
     #lower sensor definition: box a pixel below feet to check if player is standing on something
     #Note: uses player1 dimensions, so try to keep all playermodels the same dimensions or come back and change this later to be more general
-    lowerSensor = pg.Rect(playerRect.x, playerRect.bottom, 32, 1) 
-    lowerSensorHitList = BasicCollisionTest(lowerSensor, tiles, otherPlayerRect)
+    lowerSensor = pg.Rect(P1.playerRect.x, P1.playerRect.bottom, 32, 1) 
+    lowerSensorHitList = BasicCollisionTest(lowerSensor, tiles, P2.playerRect)
     if len(lowerSensorHitList) > 0:
         collisionTypes['bottom'] = True
 
@@ -167,9 +168,9 @@ while True: # game loop
     player2_movement = player2.getMovement()
 
     # removed player1_rect variable, pointer to player1.playerRect is passed in and updated, redundant variable.
-    P1Collisions = MovePlayer(player1.playerRect, player1_movement, tile_rects, player2.playerRect) 
+    P1Collisions = MovePlayer(player1, player1_movement, tile_rects, player2) 
     P1PlayerCollision = PlayerCollisionTest(player1.playerRect, player2.playerRect)
-    P2Collisions = MovePlayer(player2.playerRect, player2_movement, tile_rects, player1.playerRect)
+    P2Collisions = MovePlayer(player2, player2_movement, tile_rects, player1)
     P2PlayerCollision = PlayerCollisionTest(player2.playerRect, player1.playerRect)
     
     if P1Collisions['bottom']:

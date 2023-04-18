@@ -52,7 +52,8 @@ class Player:
         self.sprite_sheet = self.sprites[self.state]
         self.image = self.get_frame(0)
         self.rect = self.image.get_rect()
-
+        
+#Lot of redundancy with the movementEvents function, need to clean
     def movementEvents(self, collisions, event, playerCollision, otherPlayer):
         if event.type == KEYDOWN:
             if event.key == self.rightKey:
@@ -67,15 +68,27 @@ class Player:
                     self.state = 'jumping'        
             if event.key == self.downkey:
                 if playerCollision['top']:
-                    otherPlayer.yMomentum = -10
+                    otherPlayer.yMomentum = -15
                 elif playerCollision['bottom']:
                     otherPlayer.yMomentum = 10
-                if playerCollision['right']:
+                if playerCollision['right'] and playerCollision['top']:
                     otherPlayer.yMomentum = -10
                     otherPlayer.pushedRight = True
-                if playerCollision['left']:
+                elif playerCollision['left'] and playerCollision['top']:
                     otherPlayer.yMomentum = -10
                     otherPlayer.pushedLeft = True
+                elif playerCollision['right'] and playerCollision['bottom']:
+                    otherPlayer.yMomentum = 10
+                    otherPlayer.pushedRight = True
+                elif playerCollision['left'] and playerCollision['bottom']:
+                    otherPlayer.yMomentum = 10
+                    otherPlayer.pushedLeft = True
+                elif playerCollision['left']:
+                    otherPlayer.yMomentum = -10
+                    otherPlayer.pushedLeft = True
+                elif playerCollision['right']:
+                    otherPlayer.yMomentum = -10
+                    otherPlayer.pushedRight = True
 
         if event.type == KEYUP:
             if event.key == self.rightKey:
