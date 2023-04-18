@@ -1,4 +1,6 @@
 import pygame as pg
+import threading
+import time
 from pygame.locals import *
 import sys
 #from pygame.locals import * # import pygame modules
@@ -14,11 +16,15 @@ class Player:
         self.movingRight = False
         self.movingLeft = False
         self.yMomentum = 0
+        self.xMomentum = 0
         self.playerRect.center
         self.upKey = upKey
         self.leftKey = leftKey
         self.downkey = downkey
         self.rightKey = rightKey
+        self.pushedRight = False
+        self.pushedLeft = False
+        self.score = 0
         
         # The 32 is the tile size and the 2 is the scale
         self.width = 32 * 2
@@ -60,19 +66,16 @@ class Player:
                     self.yMomentum = -18
                     self.state = 'jumping'        
             if event.key == self.downkey:
-                """ otherPlayer.yMomentum = -10
-                if collisions['right']:
-                    otherPlayer.movingRight = True
-                if collisions['left']:
-                    otherPlayer.movingLeft = True """
                 if playerCollision['top']:
                     otherPlayer.yMomentum = -10
                 elif playerCollision['bottom']:
                     otherPlayer.yMomentum = 10
                 if playerCollision['right']:
-                    otherPlayer.movingRight = True
+                    otherPlayer.yMomentum = -10
+                    otherPlayer.pushedRight = True
                 if playerCollision['left']:
-                    otherPlayer.movingLeft = True
+                    otherPlayer.yMomentum = -10
+                    otherPlayer.pushedLeft = True
 
         if event.type == KEYUP:
             if event.key == self.rightKey:
@@ -81,6 +84,7 @@ class Player:
             if event.key == self.leftKey:
                 self.movingLeft = False
                 self.state = 'idle'
+
 
     def getMovement(self):
         playerMovement = [0,0]
@@ -91,7 +95,21 @@ class Player:
         self.yMomentum += 1
         if self.yMomentum > 10:
             self.yMomentum = 10
+        #adjust these next to .xMomentum values to adjust the strength of the push
+        if self.pushedRight:
+            self.xMomentum += 15
+            self.pushedRight = False
+        if self.pushedLeft:
+            self.xMomentum -= 15
+            self.pushedLeft = False
+        
+        playerMovement[0] += self.xMomentum
         playerMovement[1] += self.yMomentum
+
+        if self.xMomentum > 0:
+            self.xMomentum -= 1
+        if self.xMomentum < 0:
+            self.xMomentum += 1
         return playerMovement
     
     def get_frame(self, frame, scale=1):

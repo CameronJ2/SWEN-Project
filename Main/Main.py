@@ -1,4 +1,5 @@
 import pygame as pg
+import time
 from pygame import *
 import sys
 from Player import Player
@@ -16,6 +17,16 @@ rows = 100
 cols = 30
 screen_width = 960
 screen_height = 640
+textFont = pg.font.SysFont("Arial", 30)
+#rectangle at the bottom of the screen for killing the player
+killZone = pg.Rect(0, 630, 960, 10)
+
+P1Score = 'P1 Score: %d' % player1.score
+p2Score = 'P2 Score: %d' % player2.score
+
+def StringToScreen(text, font, color, x, y):
+    image = font.render(text, True, color)
+    screen.blit(image, (x,y))
 
 def BasicCollisionTest(playerRect, tiles, otherPlayerRect):
     hit_list = []
@@ -27,21 +38,20 @@ def BasicCollisionTest(playerRect, tiles, otherPlayerRect):
     
     return hit_list
 
+
+""" 
+added this method for the pushing mechanic. Had to jump through hoops a bit because collisions were already being handled in MovePlayer, so I couldn't use the colliderect function, so instead, I had to basically give a range of rect.x and rect.y values that would require the players to be touching.
+ """
 def PlayerCollisionTest(playerRect, otherPlayerRect):
     playerCollisionTypes = {'bottom': False, 'left': False, 'right': False, 'top': False}
-    if playerRect.colliderect(otherPlayerRect):
-        if playerRect.centery < otherPlayerRect.centery:
-            playerRect.bottom = otherPlayerRect.top
-            playerCollisionTypes['bottom'] = True
-        else:
-            playerRect.top = otherPlayerRect.bottom
-            playerCollisionTypes['top'] = True
-        if playerRect.centerx < otherPlayerRect.centerx:
-            playerRect.right = otherPlayerRect.left
-            playerCollisionTypes['right'] = True
-        if playerRect.centerx > otherPlayerRect.centerx:
-            playerRect.left = otherPlayerRect.right
-            playerCollisionTypes['left'] = True
+    if playerRect.bottom == otherPlayerRect.top and (playerRect.x -36 <= otherPlayerRect.x <= playerRect.x + 36):
+        playerCollisionTypes['bottom'] = True
+    elif playerRect.top == otherPlayerRect.bottom and (playerRect.x -36 <= otherPlayerRect.x <= playerRect.x + 36):
+        playerCollisionTypes['top'] = True
+    if (otherPlayerRect.left <= playerRect.right <= otherPlayerRect.left + 36) and (playerRect.y -55 <= otherPlayerRect.y <= playerRect.y + 55):
+        playerCollisionTypes['right'] = True
+    if (otherPlayerRect.right - 36 <= playerRect.left <= otherPlayerRect.right) and (playerRect.y -55 <= otherPlayerRect.y <= playerRect.y + 55):
+        playerCollisionTypes['left'] = True
     return playerCollisionTypes
 
 
@@ -57,7 +67,11 @@ def MovePlayer(playerRect, movement, tiles, otherPlayerRect):
         playerRect.left = 0
     elif playerRect.right > screen_width:
         playerRect.right = screen_width
-    
+
+    # check for collision with bottom of the screen (will eventually toggle next map / score screen). Here we write the logic to trigger score screen/next map
+    if playerRect.top >= killZone.bottom:
+        time.wait(1000)
+
     hit_list = BasicCollisionTest(playerRect, tiles, otherPlayerRect)
     for rect in hit_list:
         if movement[0] > 0:
@@ -122,10 +136,12 @@ while True: # game loop
     screen.blit(Bimg3, (-3000,0))
     screen.blit(Bimg2, (-3000,0))
     screen.blit(Bimg1, (-3000,0))
+    StringToScreen(P1Score, textFont, (0,0,0), 220, 150)
     
     ##### Delete this or comment this out to get rid of the player rectangles
-    pg.draw.rect(screen, (0, 0, 255), player1.playerRect)
-    pg.draw.rect(screen, (0, 0, 255), player2.playerRect)
+    # pg.draw.rect(screen, (0, 0, 255), player1.playerRect)
+    # pg.draw.rect(screen, (0, 0, 255), player2.playerRect)
+    pg.draw.rect(screen, (0, 0, 255), killZone)
      
     if player1.playerRect.top < 50 or player2.playerRect.top < 50:
         if camera_y > 100:  # only move camera if it hasn't reached the top of the level
