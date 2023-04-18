@@ -17,7 +17,7 @@ cols = 30
 screen_width = 960
 screen_height = 640
 
-def collision_test(playerRect, tiles, otherPlayerRect):
+def BasicCollisionTest(playerRect, tiles, otherPlayerRect):
     hit_list = []
     for tile in tiles:
         if playerRect.colliderect(tile):
@@ -27,8 +27,28 @@ def collision_test(playerRect, tiles, otherPlayerRect):
     
     return hit_list
 
+def PlayerCollisionTest(playerRect, otherPlayerRect):
+    playerCollisionTypes = {'bottom': False, 'left': False, 'right': False, 'top': False}
+    if playerRect.colliderect(otherPlayerRect):
+        if playerRect.centery < otherPlayerRect.centery:
+            playerRect.bottom = otherPlayerRect.top
+            playerCollisionTypes['bottom'] = True
+        else:
+            playerRect.top = otherPlayerRect.bottom
+            playerCollisionTypes['top'] = True
+        if playerRect.centerx < otherPlayerRect.centerx:
+            playerRect.right = otherPlayerRect.left
+            playerCollisionTypes['right'] = True
+        if playerRect.centerx > otherPlayerRect.centerx:
+            playerRect.left = otherPlayerRect.right
+            playerCollisionTypes['left'] = True
+    return playerCollisionTypes
 
-def movePlayer(playerRect, movement, tiles, otherPlayerRect):
+
+    
+
+
+def MovePlayer(playerRect, movement, tiles, otherPlayerRect):
     collisionTypes = {'bottom': False, 'left': False, 'right': False}
     playerRect.x += movement[0]
     
@@ -38,17 +58,17 @@ def movePlayer(playerRect, movement, tiles, otherPlayerRect):
     elif playerRect.right > screen_width:
         playerRect.right = screen_width
     
-    hit_list = collision_test(playerRect, tiles, otherPlayerRect)
+    hit_list = BasicCollisionTest(playerRect, tiles, otherPlayerRect)
     for rect in hit_list:
         if movement[0] > 0:
             playerRect.right = rect.left
-            collisionTypes['right'] = True
+            #collisionTypes['right'] = True
         elif movement[0] < 0:
-            collisionTypes['left'] = True
+            #collisionTypes['left'] = True
             playerRect.left = rect.right
     
     playerRect.y += movement[1]
-    hit_list = collision_test(playerRect, tiles, otherPlayerRect)
+    hit_list = BasicCollisionTest(playerRect, tiles, otherPlayerRect)
     for rect in hit_list:
         if movement[1] > 0:
             playerRect.bottom = rect.top
@@ -58,7 +78,7 @@ def movePlayer(playerRect, movement, tiles, otherPlayerRect):
     #lower sensor definition: box a pixel below feet to check if player is standing on something
     #Note: uses player1 dimensions, so try to keep all playermodels the same dimensions or come back and change this later to be more general
     lowerSensor = pg.Rect(playerRect.x, playerRect.bottom, 32, 1) 
-    lowerSensorHitList = collision_test(lowerSensor, tiles, otherPlayerRect)
+    lowerSensorHitList = BasicCollisionTest(lowerSensor, tiles, otherPlayerRect)
     if len(lowerSensorHitList) > 0:
         collisionTypes['bottom'] = True
 
@@ -131,13 +151,15 @@ while True: # game loop
     player2_movement = player2.getMovement()
 
     # removed player1_rect variable, pointer to player1.playerRect is passed in and updated, redundant variable.
-    P1_collisions = movePlayer(player1.playerRect, player1_movement, tile_rects, player2.playerRect) 
-    P2_collisions = movePlayer(player2.playerRect, player2_movement, tile_rects, player1.playerRect)
+    P1Collisions = MovePlayer(player1.playerRect, player1_movement, tile_rects, player2.playerRect) 
+    P1PlayerCollision = PlayerCollisionTest(player1.playerRect, player2.playerRect)
+    P2Collisions = MovePlayer(player2.playerRect, player2_movement, tile_rects, player1.playerRect)
+    P2PlayerCollision = PlayerCollisionTest(player2.playerRect, player1.playerRect)
     
-    if P1_collisions['bottom']:
+    if P1Collisions['bottom']:
         player1.yMomentum = 0
 
-    if P2_collisions['bottom']:
+    if P2Collisions['bottom']:
         player2.yMomentum = 0
 
     #draw the player
@@ -150,8 +172,8 @@ while True: # game loop
             sys.exit() # stop script
 
         if event.type == KEYDOWN or event.type == KEYUP:
-            player1.movementEvents(P1_collisions, event, player2)
-            player2.movementEvents(P2_collisions, event, player1)
+            player1.movementEvents(P1Collisions, event, P1PlayerCollision, player2)
+            player2.movementEvents(P2Collisions, event, P2PlayerCollision, player1)
 
     pg.display.update() # update display  
     clock.tick(60) # maintain 60 fps

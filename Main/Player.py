@@ -47,7 +47,7 @@ class Player:
         self.image = self.get_frame(0)
         self.rect = self.image.get_rect()
 
-    def movementEvents(self, collisions, event, otherPlayer):
+    def movementEvents(self, collisions, event, playerCollision, otherPlayer):
         if event.type == KEYDOWN:
             if event.key == self.rightKey:
                 self.movingRight = True
@@ -60,10 +60,18 @@ class Player:
                     self.yMomentum = -18
                     self.state = 'jumping'        
             if event.key == self.downkey:
-                otherPlayer.yMomentum = -10
+                """ otherPlayer.yMomentum = -10
                 if collisions['right']:
                     otherPlayer.movingRight = True
                 if collisions['left']:
+                    otherPlayer.movingLeft = True """
+                if playerCollision['top']:
+                    otherPlayer.yMomentum = -10
+                elif playerCollision['bottom']:
+                    otherPlayer.yMomentum = 10
+                if playerCollision['right']:
+                    otherPlayer.movingRight = True
+                if playerCollision['left']:
                     otherPlayer.movingLeft = True
 
         if event.type == KEYUP:
