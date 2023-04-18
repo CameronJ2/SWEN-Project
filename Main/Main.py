@@ -70,8 +70,12 @@ def MovePlayer(P1, movement, tiles, P2):
 
     # check for collision with bottom of the screen (will eventually toggle next map / score screen). 
     if P1.playerRect.top >= killZone.bottom:
-        print("GAME!")
-        # Here we write the logic to trigger score screen/next map
+        print("player1 wins! Score: %d" % P1.score)
+        P1.score += 1
+        
+    if P2.playerRect.top >= killZone.bottom:
+        print("player1 wins! Score: %d" % P2.score)
+        P2.score += 1
 
     hit_list = BasicCollisionTest(P1.playerRect, tiles, P2.playerRect)
     for rect in hit_list:
@@ -149,7 +153,8 @@ while True: # game loop
             target_camera_y -= 250
 
     # move the camera towards the target position
-    camera_y += (target_camera_y - camera_y) * 0.25  # adjust the 0.1 to control the speed of the camera movement
+    # Cameron: Made this a high value to stop the weird collision issues on camera move. The code instantly tries to update the playerrect on the screen, but the screen was slowly moving up, creating the weird collision issues
+    camera_y += (target_camera_y - camera_y) * 1  # adjust the 0.1 to control the speed of the camera movement
     
     # update player positions based on camera movement
     player1.playerRect.y -= (camera_y - old_camera_y)
