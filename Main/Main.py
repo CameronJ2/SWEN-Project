@@ -3,7 +3,7 @@ import time
 from pygame import *
 import sys
 from Player import Player
-from Level import load_level, load_tiles
+from Level import load_level, load_tiles, WinZoneLoader
 
 clock = pg.time.Clock() # set up the clock
 pg.init() # initiate pygame
@@ -20,7 +20,8 @@ screen_height = 640
 textFont = pg.font.SysFont("Arial", 30)
 #rectangle at the bottom of the screen for killing the player
 killZone = pg.Rect(0, 630, 960, 10)
-winZone = pg.Rect(425, -2450, 200, 20)
+winZone = WinZoneLoader(1)
+#winZone = pg.Rect(425, -2450, 200, 20)
 
 P1Score = 'P1 Score: %d' % player1.score
 p2Score = 'P2 Score: %d' % player2.score
