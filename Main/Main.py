@@ -20,6 +20,7 @@ screen_height = 640
 textFont = pg.font.SysFont("Arial", 30)
 #rectangle at the bottom of the screen for killing the player
 killZone = pg.Rect(0, 630, 960, 10)
+winZone = pg.Rect(400, -50, 300, 20)
 
 P1Score = 'P1 Score: %d' % player1.score
 p2Score = 'P2 Score: %d' % player2.score
@@ -147,10 +148,12 @@ while True: # game loop
     # pg.draw.rect(screen, (0, 0, 255), player1.playerRect)
     # pg.draw.rect(screen, (0, 0, 255), player2.playerRect)
     pg.draw.rect(screen, (0, 0, 255), killZone)
+    pg.draw.rect(screen, (0,0,255), winZone)
      
     if player1.playerRect.top < 50 or player2.playerRect.top < 50:
         if camera_y > 100:  # only move camera if it hasn't reached the top of the level
             target_camera_y -= 250
+            winZone.update
 
     # move the camera towards the target position
     # Cameron: Made this a high value to stop the weird collision issues on camera move. The code instantly tries to update the playerrect on the screen, but the screen was slowly moving up, creating the weird collision issues
