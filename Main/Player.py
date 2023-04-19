@@ -25,6 +25,7 @@ class Player:
         self.pushedRight = False
         self.pushedLeft = False
         self.score = 0
+        self.hasWon = False
         
         # The 32 is the tile size and the 2 is the scale
         self.width = 32 * 2

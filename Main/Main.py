@@ -20,7 +20,7 @@ screen_height = 640
 textFont = pg.font.SysFont("Arial", 30)
 #rectangle at the bottom of the screen for killing the player
 killZone = pg.Rect(0, 630, 960, 10)
-winZone = pg.Rect(400, -50, 300, 20)
+winZone = pg.Rect(425, -2450, 200, 20)
 
 P1Score = 'P1 Score: %d' % player1.score
 p2Score = 'P2 Score: %d' % player2.score
@@ -56,8 +56,15 @@ def PlayerCollisionTest(playerRect, otherPlayerRect):
     return playerCollisionTypes
 
 
-    
-
+#logic for what should happen when a player wins
+def WinFunction(winner, loser):
+    if winner == player1:
+        print("Player 1 Wins!")
+    else:
+        print("Player 2 Wins!")
+    winner.score += 1
+    winner.hasWon = True
+    loser.hasWon = False
 
 def MovePlayer(P1, movement, tiles, P2):
     collisionTypes = {'bottom': False, 'left': False, 'right': False}
@@ -69,14 +76,12 @@ def MovePlayer(P1, movement, tiles, P2):
     elif P1.playerRect.right > screen_width:
         P1.playerRect.right = screen_width
 
-    # check for collision with bottom of the screen (will eventually toggle next map / score screen). 
-    if P1.playerRect.top >= killZone.bottom:
-        print("player1 wins! Score: %d" % P1.score)
-        P1.score += 1
+    # win conditions:
+    if P2.playerRect.top >= killZone.bottom or P1.playerRect.colliderect(winZone):
+        WinFunction(P1, P2)    
+    if P1.playerRect.top >= killZone.bottom or P2.playerRect.colliderect(winZone):
+        WinFunction(P2, P1)
         
-    if P2.playerRect.top >= killZone.bottom:
-        print("player1 wins! Score: %d" % P2.score)
-        P2.score += 1
 
     hit_list = BasicCollisionTest(P1.playerRect, tiles, P2.playerRect)
     for rect in hit_list:
@@ -162,6 +167,7 @@ while True: # game loop
     # update player positions based on camera movement
     player1.playerRect.y -= (camera_y - old_camera_y)
     player2.playerRect.y -= (camera_y - old_camera_y)
+    winZone.y -= (camera_y - old_camera_y)
     old_camera_y = camera_y
 
     # draw the level tiles and update tile_rects
