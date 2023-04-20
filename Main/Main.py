@@ -11,8 +11,8 @@ pg.display.set_caption('Summit Sprint') # set the window name
 WINDOW_SIZE = (960,640) # set up window size
 screen = pg.display.set_mode(WINDOW_SIZE,0,32) # initiate screen
 display = pg.Surface((960, 640))
-player1 = Player('Main\img\Owl_Mon', K_UP, K_LEFT, K_DOWN, K_RIGHT, 150, 500)
-player2 = Player('Main\img\Pink_Mon', K_w, K_a, K_s, K_d, 100, 500)
+player1 = Player('img/Owl_Mon', K_UP, K_LEFT, K_DOWN, K_RIGHT, 150, 500)
+player2 = Player('img/Pink_Mon', K_w, K_a, K_s, K_d, 100, 500)
 rows = 100
 cols = 30
 screen_width = 960
@@ -20,6 +20,9 @@ screen_height = 640
 textFont = pg.font.SysFont("Arial", 30)
 #rectangle at the bottom of the screen for killing the player
 killZone = pg.Rect(0, 630, 960, 10)
+#defferent lava hit box locations for killing the player
+lava = pg.Rect(416, 544, 32, 32)
+lava1 = pg.Rect(544, 480, 32, 32)
 winZone = WinZoneLoader(1)
 #winZone = pg.Rect(425, -2450, 200, 20)
 
@@ -78,10 +81,11 @@ def MovePlayer(P1, movement, tiles, P2):
         P1.playerRect.right = screen_width
 
     # win conditions:
-    if P2.playerRect.top >= killZone.bottom or P1.playerRect.colliderect(winZone):
+    if P2.playerRect.top >= killZone.bottom or P2.playerRect.bottom == lava.top or P2.playerRect.bottom == lava1.top or P1.playerRect.colliderect(winZone):
         WinFunction(P1, P2)    
-    if P1.playerRect.top >= killZone.bottom or P2.playerRect.colliderect(winZone):
+    if P1.playerRect.top >= killZone.bottom or P1.playerRect.bottom == lava.top or P1.playerRect.bottom == lava1.top or P2.playerRect.colliderect(winZone):
         WinFunction(P2, P1)
+        
         
 
     hit_list = BasicCollisionTest(P1.playerRect, tiles, P2.playerRect)
@@ -111,9 +115,9 @@ def MovePlayer(P1, movement, tiles, P2):
     return collisionTypes
 
 #background image
-BG3 = pg.image.load('Main/Free/BG_3/BG_3.png').convert_alpha()
-BG2 = pg.image.load('Main/Free/BG_2/BG_2.png').convert_alpha()
-BG1 = pg.image.load('Main/Free/BG_1/BG_1.png').convert_alpha()
+BG3 = pg.image.load('Free/BG_3/BG_3.png').convert_alpha()
+BG2 = pg.image.load('Free/BG_2/BG_2.png').convert_alpha()
+BG1 = pg.image.load('Free/BG_1/BG_1.png').convert_alpha()
 
 #resizes BG
 Bimg3 = pg.transform.scale(BG3, (1929 * 4, 400 * 4))
@@ -121,14 +125,14 @@ Bimg2 = pg.transform.scale(BG2, (1929 * 4, 400 * 4))
 Bimg1 = pg.transform.scale(BG1, (1929 * 4, 400 * 4))
 
 # load the tiles from the tile folder
-tile_images = load_tiles('Main/level_editor/Tiles/1_Tiles')
+tile_images = load_tiles('level_editor/Tiles/1_Tiles')
 
 # create an empty level
 level = []
 tile_rects = []
 
 # load the level data from file
-level, tile_rects = load_level('Main/level.txt', cols, rows)
+level, tile_rects = load_level('level_editor/level.txt', cols, rows)
 
 # replace the tile indices with tile images in the level data
 for row in range(len(level)):
@@ -136,6 +140,7 @@ for row in range(len(level)):
         tile_index = level[row][col]
         if tile_index != 0:
             level[row][col] = tile_images[tile_index]
+        #if tile_index == 60:
 
 camera_y = 2560
 old_camera_y = 2560
@@ -155,6 +160,8 @@ while True: # game loop
     # pg.draw.rect(screen, (0, 0, 255), player2.playerRect)
     pg.draw.rect(screen, (0, 0, 255), killZone)
     pg.draw.rect(screen, (0,0,255), winZone)
+    pg.draw.rect(screen, (255, 0 , 0), lava)
+    pg.draw.rect(screen, (255, 0, 0), lava1)
      
     if player1.playerRect.top < 50 or player2.playerRect.top < 50:
         if camera_y > 100:  # only move camera if it hasn't reached the top of the level
@@ -169,8 +176,12 @@ while True: # game loop
     player1.playerRect.y -= (camera_y - old_camera_y)
     player2.playerRect.y -= (camera_y - old_camera_y)
     winZone.y -= (camera_y - old_camera_y)
+    
+    # update lava hit boxes based on camera movement
+    lava.y -= (camera_y - old_camera_y)
+    lava1.y -= (camera_y - old_camera_y)
     old_camera_y = camera_y
-
+    
     # draw the level tiles and update tile_rects
     for row in range(len(level)):
         for col in range(len(level[row])):
