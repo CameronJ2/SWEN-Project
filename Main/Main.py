@@ -11,8 +11,8 @@ pg.display.set_caption('Summit Sprint') # set the window name
 WINDOW_SIZE = (960,640) # set up window size
 screen = pg.display.set_mode(WINDOW_SIZE,0,32) # initiate screen
 display = pg.Surface((960, 640))
-player1 = Player('img/Owl_Mon', K_UP, K_LEFT, K_DOWN, K_RIGHT, 150, 500)
-player2 = Player('img/Pink_Mon', K_w, K_a, K_s, K_d, 100, 500)
+player1 = Player('Main\img\Owl_Mon', K_UP, K_LEFT, K_DOWN, K_RIGHT, 150, 500)
+player2 = Player('Main\img\Pink_Mon', K_w, K_a, K_s, K_d, 100, 500)
 rows = 100
 cols = 30
 screen_width = 960
@@ -115,9 +115,9 @@ def MovePlayer(P1, movement, tiles, P2):
     return collisionTypes
 
 #background image
-BG3 = pg.image.load('Free/BG_3/BG_3.png').convert_alpha()
-BG2 = pg.image.load('Free/BG_2/BG_2.png').convert_alpha()
-BG1 = pg.image.load('Free/BG_1/BG_1.png').convert_alpha()
+BG3 = pg.image.load('Main/Free/BG_3/BG_3.png').convert_alpha()
+BG2 = pg.image.load('Main/Free/BG_2/BG_2.png').convert_alpha()
+BG1 = pg.image.load('Main/Free/BG_1/BG_1.png').convert_alpha()
 
 #resizes BG
 Bimg3 = pg.transform.scale(BG3, (1929 * 4, 400 * 4))
@@ -125,14 +125,14 @@ Bimg2 = pg.transform.scale(BG2, (1929 * 4, 400 * 4))
 Bimg1 = pg.transform.scale(BG1, (1929 * 4, 400 * 4))
 
 # load the tiles from the tile folder
-tile_images = load_tiles('level_editor/Tiles/1_Tiles')
+tile_images = load_tiles('Main/level_editor/Tiles/1_Tiles')
 
 # create an empty level
 level = []
 tile_rects = []
 
 # load the level data from file
-level, tile_rects = load_level('level_editor/level.txt', cols, rows)
+level, tile_rects = load_level('Main/level1.txt', cols, rows)
 
 # replace the tile indices with tile images in the level data
 for row in range(len(level)):
