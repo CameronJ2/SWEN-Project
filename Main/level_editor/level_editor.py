@@ -112,14 +112,14 @@ def handle_input():
 
 # Save level to a file
 def save_level():
-    with open('Main/level_editor/level1.txt', 'w') as f:
+    with open('Main/level_editor/level2.txt', 'w') as f:
         for row in level:
             f.write(','.join(str(tile_index) for tile_index in row))
             f.write('\n')
 
 # Load level from a file
 def load_level():
-    with open('Main/level_editor/level1.txt', 'r') as f:
+    with open('Main/level_editor/level2.txt', 'r') as f:
         for row, line in enumerate(f):
             tile_indices = line.strip().split(',')
             for col, tile_index in enumerate(tile_indices):
