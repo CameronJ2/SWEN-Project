@@ -132,7 +132,7 @@ level = []
 tile_rects = []
 
 # load the level data from file
-level, tile_rects = load_level('Main/level1.txt', cols, rows)
+level, tile_rects = load_level('Main/level2.txt', cols, rows)
 
 # replace the tile indices with tile images in the level data
 for row in range(len(level)):
