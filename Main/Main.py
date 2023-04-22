@@ -25,6 +25,8 @@ lava = pg.Rect(416, 544, 32, 32)
 lava1 = pg.Rect(544, 480, 32, 32)
 winZone = WinZoneLoader(1)
 #winZone = pg.Rect(425, -2450, 200, 20)
+levelPath = 'Main/level2.txt'
+tile_size = 32
 
 P1Score = 'P1 Score: %d' % player1.score
 p2Score = 'P2 Score: %d' % player2.score
@@ -155,6 +157,7 @@ target_camera_y = 2560
     
 while True: # game loop
     tile_rects = []  # Clear tile_rects
+    lavaRects = []
 
     #loads images to screen
     screen.blit(Bimg3, (-3000,0))
@@ -189,13 +192,24 @@ while True: # game loop
     lava1.y -= (camera_y - old_camera_y)
     old_camera_y = camera_y
     
-    # draw the level tiles and update tile_rects
+    # draw the level tiles
     for row in range(len(level)):
         for col in range(len(level[row])):
             tile = level[row][col]
-            if tile != 0 and tile != 60:
-                tile_rects.append(pg.Rect(col * 32, row * 32 - camera_y, 32, 32))
+            if tile != 0 and tile:
                 screen.blit(tile, (col * 32, row * 32 - camera_y))
+    
+    # draw the tile_rects and lavaRects
+    with open(levelPath, 'r') as f:
+        for row, line in enumerate(f):
+            tile_indices = line.strip().split(',')
+            for col, tile_index in enumerate(tile_indices):
+                tile_x = col * tile_size
+                tile_y = row * tile_size
+                if (int(tile_index) == 60):
+                    lavaRects.append(pg.Rect(col * 32, row * 32 - camera_y, 32, 32))
+                elif int(tile_index) != 0:
+                    tile_rects.append(pg.Rect(col * 32, row * 32 - camera_y, 32, 32))
                                 
     player1_movement = player1.getMovement()
     player2_movement = player2.getMovement()

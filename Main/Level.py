@@ -39,7 +39,7 @@ def load_level(level_path, cols, rows):
                 elif int(tile_index) != 0:
                     tile_rect = pg.Rect(tile_x, tile_y, tile_size, tile_size)
                     tile_rects.append(tile_rect)
-                    level_data[row][col] = int(tile_index)
+                level_data[row][col] = int(tile_index)
     return level_data, tile_rects, lavaRects
 
 def WinZoneLoader(state):
