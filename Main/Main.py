@@ -70,7 +70,7 @@ def WinFunction(winner, loser):
     winner.hasWon = True
     loser.hasWon = False
 
-def MovePlayer(P1, movement, tiles, P2):
+def MovePlayer(P1, movement, tiles, lavaRects, P2):
     collisionTypes = {'bottom': False, 'left': False, 'right': False}
     P1.playerRect.x += movement[0]
     
@@ -81,10 +81,15 @@ def MovePlayer(P1, movement, tiles, P2):
         P1.playerRect.right = screen_width
 
     # win conditions:
-    if P2.playerRect.top >= killZone.bottom or P2.playerRect.bottom == lava.top or P2.playerRect.bottom == lava1.top or P1.playerRect.colliderect(winZone):
+    if P2.playerRect.top >= killZone.bottom or P1.playerRect.colliderect(winZone):
         WinFunction(P1, P2)    
-    if P1.playerRect.top >= killZone.bottom or P1.playerRect.bottom == lava.top or P1.playerRect.bottom == lava1.top or P2.playerRect.colliderect(winZone):
+    if P1.playerRect.top >= killZone.bottom or P2.playerRect.colliderect(winZone):
         WinFunction(P2, P1)
+    for rect in lavaRects:
+        if P1.playerRect.colliderect(rect):
+            WinFunction(P2, P1)
+        elif P2.playerRect.colliderect(rect):
+            WinFunction(P1, P2)
         
         
 
@@ -130,10 +135,12 @@ tile_images = load_tiles('Main/level_editor/Tiles/1_Tiles')
 # create an empty level
 level = []
 tile_rects = []
+lavaRects = []
 
 # load the level data from file
-level, tile_rects = load_level('Main/level2.txt', cols, rows)
-
+# Note: This code for the tile_rects is redundant, it's just redefined down in the main loop
+level, tile_rects, lavaRects = load_level('Main/level2.txt', cols, rows)
+tile_rects = []
 # replace the tile indices with tile images in the level data
 for row in range(len(level)):
     for col in range(len(level[row])):
@@ -160,8 +167,8 @@ while True: # game loop
     # pg.draw.rect(screen, (0, 0, 255), player2.playerRect)
     pg.draw.rect(screen, (0, 0, 255), killZone)
     pg.draw.rect(screen, (0,0,255), winZone)
-    pg.draw.rect(screen, (255, 0 , 0), lava)
-    pg.draw.rect(screen, (255, 0, 0), lava1)
+    # pg.draw.rect(screen, (255, 0 , 0), lava)
+    # pg.draw.rect(screen, (255, 0, 0), lava1)
      
     if player1.playerRect.top < 50 or player2.playerRect.top < 50:
         if camera_y > 100:  # only move camera if it hasn't reached the top of the level
@@ -186,7 +193,7 @@ while True: # game loop
     for row in range(len(level)):
         for col in range(len(level[row])):
             tile = level[row][col]
-            if tile != 0:
+            if tile != 0 and tile != 60:
                 tile_rects.append(pg.Rect(col * 32, row * 32 - camera_y, 32, 32))
                 screen.blit(tile, (col * 32, row * 32 - camera_y))
                                 
@@ -194,9 +201,9 @@ while True: # game loop
     player2_movement = player2.getMovement()
 
     # removed player1_rect variable, pointer to player1.playerRect is passed in and updated, redundant variable.
-    P1Collisions = MovePlayer(player1, player1_movement, tile_rects, player2) 
+    P1Collisions = MovePlayer(player1, player1_movement, tile_rects, lavaRects, player2) 
     P1PlayerCollision = PlayerCollisionTest(player1.playerRect, player2.playerRect)
-    P2Collisions = MovePlayer(player2, player2_movement, tile_rects, player1)
+    P2Collisions = MovePlayer(player2, player2_movement, tile_rects, lavaRects, player1)
     P2PlayerCollision = PlayerCollisionTest(player2.playerRect, player1.playerRect)
     
     if P1Collisions['bottom']:

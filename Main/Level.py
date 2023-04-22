@@ -26,17 +26,21 @@ def load_tiles(tile_folder):
 def load_level(level_path, cols, rows):
     level_data = [[0 for x in range(cols)] for y in range(rows)]
     tile_rects = []
+    lavaRects = []
     with open(level_path, 'r') as f:
         for row, line in enumerate(f):
             tile_indices = line.strip().split(',')
             for col, tile_index in enumerate(tile_indices):
                 tile_x = col * tile_size
                 tile_y = row * tile_size
-                if int(tile_index) != 0:
+                if (int(tile_index) == 60):
+                    lavaRect = pg.Rect(tile_x, tile_y, tile_size, tile_size)
+                    lavaRects.append(lavaRect)
+                elif int(tile_index) != 0:
                     tile_rect = pg.Rect(tile_x, tile_y, tile_size, tile_size)
                     tile_rects.append(tile_rect)
-                level_data[row][col] = int(tile_index)
-    return level_data, tile_rects
+                    level_data[row][col] = int(tile_index)
+    return level_data, tile_rects, lavaRects
 
 def WinZoneLoader(state):
     if state == 1:
