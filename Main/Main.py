@@ -17,7 +17,7 @@ rows = 100
 cols = 30
 screen_width = 960
 screen_height = 640
-textFont = pg.font.SysFont("Arial", 30)
+textFont = pg.font.Font('Main\ourfont.ttf',32)
 #rectangle at the bottom of the screen for killing the player
 killZone = pg.Rect(0, 630, 960, 10)
 #defferent lava hit box locations for killing the player
@@ -27,41 +27,67 @@ winZone = WinZoneLoader(1)
 #winZone = pg.Rect(425, -2450, 200, 20)
 levelPath = 'Main/level2.txt'
 tile_size = 32
-intro_background = pg.image.load('Main\Free\BG_1\BG_1.png')
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BLUE = (0, 0, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
 
 class Game:
     flag = 0
 
-    def intro_screen(self):
+    def IntroScreen(self):
         intro = True
-        title = textFont.render('Summit Sprint', True, WHITE)
-        title_rect = title.get_rect(x=50, y=300)
         play_button = Button(50, 400, 600, 100, WHITE, BLUE, 'press here to play', 32)
         while intro:
             for event in pg.event.get():
                 if event.type ==pg.QUIT:
                     intro = False
                     self.flag = -1
+                if event.type == KEYDOWN:
+                    if event.key == K_SPACE:
+                        intro = False
+                        self.flag = 1
                    
-                  
-
             mouse_pos = pg.mouse.get_pos()
             mouse_pressed = pg.mouse.get_pressed()
             if play_button.is_pressed(mouse_pos, mouse_pressed):
                 intro = False
-                self.flag += 1
-            screen.blit(intro_background, (0,0))
-            screen.blit(title, title_rect)
+                self.flag = 1
+            screen.blit(pg.image.load('Main\Free\BG_1\BG_1.png'), (0,0))
             screen.blit(play_button.image, play_button.rect)
+            StringToScreen("Summit Sprint", textFont, WHITE, 50, 300)
             clock.tick(60)
             pg.display.update()
 
+    def RoundOverScreen(self):
+        roundScreen = True
+        play_button = Button(50, 400, 600, 100, WHITE, BLUE, 'press here to play', 32)
+        winner = ''
+        if player1.hasWon:
+            winner = 'Player1'
+        elif player2.hasWon:
+            winner = 'Player2'
+        while roundScreen:
+            for event in pg.event.get():
+                if event.type ==pg.QUIT:
+                    roundScreen = False
+                    self.flag = -1
+                if event.type == KEYDOWN:
+                    if event.key == K_SPACE:
+                        roundScreen = False
+                        self.flag = 3
+            mouse_pos = pg.mouse.get_pos()
+            mouse_pressed = pg.mouse.get_pressed()
+            if play_button.is_pressed(mouse_pos, mouse_pressed):
+                roundScreen = False
+                self.flag = 3
+            screen.blit(pg.image.load('Main\Free\BG_2\BG_2.png'), (0,0))
+            screen.blit(play_button.image, play_button.rect)
+            StringToScreen('%s won the round!' % winner, textFont, GREEN, 50, 200)
+            clock.tick(60)
+            pg.display.update()
 
-P1Score = 'P1 Score: %d' % player1.score
-p2Score = 'P2 Score: %d' % player2.score
 
 def StringToScreen(text, font, color, x, y):
     image = font.render(text, True, color)
@@ -97,7 +123,7 @@ def PlayerCollisionTest(playerRect, otherPlayerRect):
 #logic for what should happen when a player wins
 def WinFunction(winner, loser):
     screen.fill((0,0,0))
-    ourgame.flag =0
+    ourgame.flag = 2
     if winner == player1:
         print("Player 1 Wins!")
     else:
@@ -241,7 +267,8 @@ def MainGameLoop():
         if event.type == KEYDOWN or event.type == KEYUP:
             player1.movementEvents(P1Collisions, event, P1PlayerCollision, player2)
             player2.movementEvents(P2Collisions, event, P2PlayerCollision, player1)
-    StringToScreen(P1Score, textFont, (0,0,0), 0, 580)
+    StringToScreen("Player1: %d" %(player1.score / 4), textFont, (0,0,0), 0, 610)
+    StringToScreen("Player2: %d" %(player2.score / 2), textFont, (0,0,0), 600, 610)
     pg.display.update() # update display  
     clock.tick(60) # maintain 60 fps
 
@@ -280,7 +307,7 @@ target_camera_y = 2560
 
 ourgame = Game()
 while True: # game loop
-    if ourgame.flag == -1 or ourgame.flag == 2:
+    if ourgame.flag == -1:
         pg.quit()
         exit()
 
@@ -292,11 +319,11 @@ while True: # game loop
         old_camera_y = 2560
         target_camera_y = 2560
         print('player 1 score: %d\nplayer 2 score: %d' % (player1.score / 2, player2.score / 2))
-        ourgame.intro_screen()
+        ourgame.IntroScreen()
 
     if ourgame.flag == 1:
         screen.fill((0,0,0))
-        levelPath = 'Main/level.txt'
+        levelPath = 'Main/level1.txt'
         level = []
         tile_rects = []
         lavaRects = []
@@ -308,9 +335,19 @@ while True: # game loop
                     level[row][col] = tile_images[tile_index]
         MainGameLoop()
 
+    if ourgame.flag == 2:
+        screen.fill((0,0,0))
+        player1.reset()
+        player2.reset()
+        camera_y = 2560
+        old_camera_y = 2560
+        target_camera_y = 2560
+        print('player 1 score: %d\nplayer 2 score: %d' % (player1.score / 2, player2.score / 2))
+        ourgame.RoundOverScreen()
+
     if ourgame.flag == 3:
         screen.fill((0,0,0))
-        levelPath = 'Main/level1.txt'
+        levelPath = 'Main/level.txt'
         level = []
         tile_rects = []
         lavaRects = []
