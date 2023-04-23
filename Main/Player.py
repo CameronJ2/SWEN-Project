@@ -126,6 +126,14 @@ class Player:
             self.xMomentum += 1
         return playerMovement
     
+
+    def reset(self):
+        self.playerRect.x = 150
+        self.playerRect.y = 500
+        self.movingRight = False
+        self.movingLeft = False
+        self.yMomentum = 0
+    
     def get_frame(self, frame, scale=1):
         # Calculate position of current frame in sprite sheet
         x = frame * self.width

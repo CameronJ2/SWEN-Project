@@ -1,9 +1,9 @@
 import pygame as pg
-import time
 from pygame import *
 import sys
 from Player import Player
 from Level import load_level, load_tiles, WinZoneLoader
+from screens import *
 
 clock = pg.time.Clock() # set up the clock
 pg.init() # initiate pygame
@@ -27,6 +27,38 @@ winZone = WinZoneLoader(1)
 #winZone = pg.Rect(425, -2450, 200, 20)
 levelPath = 'Main/level2.txt'
 tile_size = 32
+intro_background = pg.image.load('Main\Free\BG_1\BG_1.png')
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+BLUE = (0, 0, 255)
+
+class Game:
+    flag = 0
+
+    def intro_screen(self):
+        intro = True
+        title = textFont.render('Summit Sprint', True, WHITE)
+        title_rect = title.get_rect(x=50, y=300)
+        play_button = Button(50, 400, 600, 100, WHITE, BLUE, 'press here to play', 32)
+        while intro:
+            for event in pg.event.get():
+                if event.type ==pg.QUIT:
+                    intro = False
+                    self.flag = -1
+                   
+                  
+
+            mouse_pos = pg.mouse.get_pos()
+            mouse_pressed = pg.mouse.get_pressed()
+            if play_button.is_pressed(mouse_pos, mouse_pressed):
+                intro = False
+                self.flag += 1
+            screen.blit(intro_background, (0,0))
+            screen.blit(title, title_rect)
+            screen.blit(play_button.image, play_button.rect)
+            clock.tick(60)
+            pg.display.update()
+
 
 P1Score = 'P1 Score: %d' % player1.score
 p2Score = 'P2 Score: %d' % player2.score
@@ -64,13 +96,16 @@ def PlayerCollisionTest(playerRect, otherPlayerRect):
 
 #logic for what should happen when a player wins
 def WinFunction(winner, loser):
+    screen.fill((0,0,0))
+    ourgame.flag =0
     if winner == player1:
         print("Player 1 Wins!")
     else:
         print("Player 2 Wins!")
-    winner.score += 1
     winner.hasWon = True
     loser.hasWon = False
+    winner.score += 1
+    
 
 def MovePlayer(P1, movement, tiles, lavaRects, P2):
     collisionTypes = {'bottom': False, 'left': False, 'right': False}
@@ -121,49 +156,17 @@ def MovePlayer(P1, movement, tiles, lavaRects, P2):
 
     return collisionTypes
 
-#background image
-BG3 = pg.image.load('Main/Free/BG_3/BG_3.png').convert_alpha()
-BG2 = pg.image.load('Main/Free/BG_2/BG_2.png').convert_alpha()
-BG1 = pg.image.load('Main/Free/BG_1/BG_1.png').convert_alpha()
-
-#resizes BG
-Bimg3 = pg.transform.scale(BG3, (1929 * 4, 400 * 4))
-Bimg2 = pg.transform.scale(BG2, (1929 * 4, 400 * 4))
-Bimg1 = pg.transform.scale(BG1, (1929 * 4, 400 * 4))
-
-# load the tiles from the tile folder
-tile_images = load_tiles('Main/level_editor/Tiles/1_Tiles')
-
-# create an empty level
-level = []
-tile_rects = []
-lavaRects = []
-
-# load the level data from file
-# Note: This code for the tile_rects is redundant, it's just redefined down in the main loop
-level, tile_rects, lavaRects = load_level('Main/level2.txt', cols, rows)
-tile_rects = []
-# replace the tile indices with tile images in the level data
-for row in range(len(level)):
-    for col in range(len(level[row])):
-        tile_index = level[row][col]
-        if tile_index != 0:
-            level[row][col] = tile_images[tile_index]
-        #if tile_index == 60:
-
-camera_y = 2560
-old_camera_y = 2560
-target_camera_y = 2560
-    
-while True: # game loop
+def MainGameLoop():
     tile_rects = []  # Clear tile_rects
     lavaRects = []
-
+    global camera_y
+    global old_camera_y
+    global target_camera_y
     #loads images to screen
     screen.blit(Bimg3, (-3000,0))
     screen.blit(Bimg2, (-3000,0))
     screen.blit(Bimg1, (-3000,0))
-    StringToScreen(P1Score, textFont, (0,0,0), 220, 150)
+    # StringToScreen(P1Score, textFont, (0,0,0), 220, 150)
     
     ##### Delete this or comment this out to get rid of the player rectangles
     # pg.draw.rect(screen, (0, 0, 255), player1.playerRect)
@@ -172,7 +175,7 @@ while True: # game loop
     pg.draw.rect(screen, (0,0,255), winZone)
     # pg.draw.rect(screen, (255, 0 , 0), lava)
     # pg.draw.rect(screen, (255, 0, 0), lava1)
-     
+    
     if player1.playerRect.top < 50 or player2.playerRect.top < 50:
         if camera_y > 100:  # only move camera if it hasn't reached the top of the level
             target_camera_y -= 250
@@ -228,7 +231,7 @@ while True: # game loop
 
     #draw the player
     player1.draw(screen)
-    player2.draw(screen)    
+    player2.draw(screen)
     
     for event in pg.event.get(): # event loop
         if event.type == QUIT: # check for window quit
@@ -238,6 +241,83 @@ while True: # game loop
         if event.type == KEYDOWN or event.type == KEYUP:
             player1.movementEvents(P1Collisions, event, P1PlayerCollision, player2)
             player2.movementEvents(P2Collisions, event, P2PlayerCollision, player1)
-
+    StringToScreen(P1Score, textFont, (0,0,0), 0, 580)
     pg.display.update() # update display  
     clock.tick(60) # maintain 60 fps
+
+
+#background image
+BG3 = pg.image.load('Main/Free/BG_3/BG_3.png').convert_alpha()
+BG2 = pg.image.load('Main/Free/BG_2/BG_2.png').convert_alpha()
+BG1 = pg.image.load('Main/Free/BG_1/BG_1.png').convert_alpha()
+
+#resizes BG
+Bimg3 = pg.transform.scale(BG3, (1929 * 4, 400 * 4))
+Bimg2 = pg.transform.scale(BG2, (1929 * 4, 400 * 4))
+Bimg1 = pg.transform.scale(BG1, (1929 * 4, 400 * 4))
+
+# load the tiles from the tile folder
+tile_images = load_tiles('Main/level_editor/Tiles/1_Tiles')
+
+# create an empty level
+level = []
+tile_rects = []
+lavaRects = []
+
+# load the level data from file
+# Note: This code for the tile_rects is redundant, it's just redefined down in the main loop
+# level, tile_rects, lavaRects = load_level(levelPath, cols, rows)
+# tile_rects = []
+# replace the tile indices with tile images in the level data
+# for row in range(len(level)):
+#     for col in range(len(level[row])):
+#         tile_index = level[row][col]
+#         if tile_index != 0:
+#             level[row][col] = tile_images[tile_index]
+camera_y = 2560
+old_camera_y = 2560
+target_camera_y = 2560
+
+ourgame = Game()
+while True: # game loop
+    if ourgame.flag == -1 or ourgame.flag == 2:
+        pg.quit()
+        exit()
+
+    if ourgame.flag == 0:
+        screen.fill((0,0,0))
+        player1.reset()
+        player2.reset()
+        camera_y = 2560
+        old_camera_y = 2560
+        target_camera_y = 2560
+        print('player 1 score: %d\nplayer 2 score: %d' % (player1.score / 2, player2.score / 2))
+        ourgame.intro_screen()
+
+    if ourgame.flag == 1:
+        screen.fill((0,0,0))
+        levelPath = 'Main/level.txt'
+        level = []
+        tile_rects = []
+        lavaRects = []
+        level, tile_rects, lavaRects = load_level(levelPath, cols, rows)
+        for row in range(len(level)):
+            for col in range(len(level[row])):
+                tile_index = level[row][col]
+                if tile_index != 0:
+                    level[row][col] = tile_images[tile_index]
+        MainGameLoop()
+
+    if ourgame.flag == 3:
+        screen.fill((0,0,0))
+        levelPath = 'Main/level1.txt'
+        level = []
+        tile_rects = []
+        lavaRects = []
+        level, tile_rects, lavaRects = load_level(levelPath, cols, rows)
+        for row in range(len(level)):
+            for col in range(len(level[row])):
+                tile_index = level[row][col]
+                if tile_index != 0:
+                    level[row][col] = tile_images[tile_index]
+        MainGameLoop()
