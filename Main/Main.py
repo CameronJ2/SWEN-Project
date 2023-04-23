@@ -89,6 +89,35 @@ class Game:
             pg.display.update()
 
 
+    def GameOver(self):
+        GOBool = True
+        play_button = Button(50, 400, 600, 100, WHITE, BLUE, 'press here to exit', 32)
+        winner = ''
+        if player1.hasWon:
+            winner = 'Player1'
+        elif player2.hasWon:
+            winner = 'Player2'
+        while GOBool:
+            for event in pg.event.get():
+                if event.type ==pg.QUIT:
+                    GOBool = False
+                    self.flag = -1
+                if event.type == KEYDOWN:
+                    if event.key == K_SPACE:
+                        GOBool = False
+                        self.flag = -1
+            mouse_pos = pg.mouse.get_pos()
+            mouse_pressed = pg.mouse.get_pressed()
+            if play_button.is_pressed(mouse_pos, mouse_pressed):
+                GOBool = False
+                self.flag = -1
+            screen.blit(pg.image.load('Main\Free\BG_3\BG_3.png'), (0,0))
+            screen.blit(play_button.image, play_button.rect)
+            StringToScreen('%s won the game!' % winner, textFont, GREEN, 50, 200)
+            clock.tick(60)
+            pg.display.update()
+
+
 def StringToScreen(text, font, color, x, y):
     image = font.render(text, True, color)
     screen.blit(image, (x,y))
@@ -123,15 +152,16 @@ def PlayerCollisionTest(playerRect, otherPlayerRect):
 #logic for what should happen when a player wins
 def WinFunction(winner, loser):
     screen.fill((0,0,0))
+    winner.hasWon = True
+    loser.hasWon = False
+    winner.score += 1
     ourgame.flag = 2
     if winner == player1:
         print("Player 1 Wins!")
     else:
         print("Player 2 Wins!")
-    winner.hasWon = True
-    loser.hasWon = False
-    winner.score += 1
-    
+
+
 
 def MovePlayer(P1, movement, tiles, lavaRects, P2):
     collisionTypes = {'bottom': False, 'left': False, 'right': False}
@@ -323,7 +353,7 @@ while True: # game loop
 
     if ourgame.flag == 1:
         screen.fill((0,0,0))
-        levelPath = 'Main/level1.txt'
+        levelPath = 'Main/level.txt'
         level = []
         tile_rects = []
         lavaRects = []
@@ -347,7 +377,7 @@ while True: # game loop
 
     if ourgame.flag == 3:
         screen.fill((0,0,0))
-        levelPath = 'Main/level.txt'
+        levelPath = 'Main/level1.txt'
         level = []
         tile_rects = []
         lavaRects = []
@@ -358,3 +388,28 @@ while True: # game loop
                 if tile_index != 0:
                     level[row][col] = tile_images[tile_index]
         MainGameLoop()
+
+    if ourgame.flag == 4:
+        screen.fill((0,0,0))
+        levelPath = 'Main/level2.txt'
+        level = []
+        tile_rects = []
+        lavaRects = []
+        level, tile_rects, lavaRects = load_level(levelPath, cols, rows)
+        for row in range(len(level)):
+            for col in range(len(level[row])):
+                tile_index = level[row][col]
+                if tile_index != 0:
+                    level[row][col] = tile_images[tile_index]
+        MainGameLoop()
+
+
+    if ourgame.flag == 5:
+        screen.fill((0,0,0))
+        player1.reset()
+        player2.reset()
+        camera_y = 2560
+        old_camera_y = 2560
+        target_camera_y = 2560
+        print('player 1 score: %d\nplayer 2 score: %d' % (player1.score / 2, player2.score / 2))
+        ourgame.GameOver()
