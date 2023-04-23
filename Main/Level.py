@@ -46,3 +46,9 @@ def WinZoneLoader(state):
     if state == 1:
         winZone = pg.Rect(425, -2450, 200, 20)
         return winZone
+    if state == 2:
+        winZone = pg.Rect(425, -2450, 200, 20)
+        return winZone
+    if state == 3:
+        winZone = pg.Rect(425, -2450, 200, 20)
+        return winZone
