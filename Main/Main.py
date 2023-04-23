@@ -221,9 +221,9 @@ def MovePlayer(P1, movement, tiles, lavaRects, P2):
         P1.playerRect.right = screen_width
 
     # win conditions:
-    if P1.playerRect.colliderect(winZone):
+    if P2.playerRect.top >= killZone.bottom or P1.playerRect.colliderect(winZone):
         WinFunction(P1, P2)    
-    if P2.playerRect.colliderect(winZone):
+    if P1.playerRect.top >= killZone.bottom or P2.playerRect.colliderect(winZone):
         WinFunction(P2, P1)
     for rect in lavaRects:
         if P1.playerRect.colliderect(rect):
