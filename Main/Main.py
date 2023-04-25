@@ -199,11 +199,7 @@ def WinFunction(winner, loser):
     screen.fill((0,0,0))
     winner.hasWon = True
     loser.hasWon = False
-    if winner == player1:
-        print("Player 1 Wins!")
-    else:
-        print("Player 2 Wins!")
-    if winner.score > 1:
+    if winner.score >= 1:
         ourgame.flag = 5
     else:
         ourgame.flag = 2
