@@ -222,7 +222,7 @@ def MovePlayer(P1, movement, tiles, lavaRects, P2):
 
     # win conditions:
     if P2.playerRect.top >= killZone.bottom or P1.playerRect.colliderect(winZone):
-        WinFunction(P1, P2)    
+        WinFunction(P1, P2)
     if P1.playerRect.top >= killZone.bottom or P2.playerRect.colliderect(winZone):
         WinFunction(P2, P1)
     for rect in lavaRects:
@@ -269,15 +269,9 @@ def MainGameLoop():
     screen.blit(Bimg3, (-3000,0))
     screen.blit(Bimg2, (-3000,0))
     screen.blit(Bimg1, (-3000,0))
-    # StringToScreen(P1Score, textFont, (0,0,0), 220, 150)
     
-    ##### Delete this or comment this out to get rid of the player rectangles
-    # pg.draw.rect(screen, (0, 0, 255), player1.playerRect)
-    # pg.draw.rect(screen, (0, 0, 255), player2.playerRect)
-    # pg.draw.rect(screen, (0, 0, 255), killZone)
-    pg.draw.rect(screen, (255,0,0), winZone)
-    # pg.draw.rect(screen, (255, 0 , 0), lava)
-    # pg.draw.rect(screen, (255, 0, 0), lava1)
+    # Command to draw rectangles. Currently only draws winZone
+    pg.draw.rect(screen, (0,255,0), winZone)
     
     if player1.playerRect.top < 50 or player2.playerRect.top < 50:
         if camera_y > 100:  # only move camera if it hasn't reached the top of the level
@@ -320,7 +314,7 @@ def MainGameLoop():
     player1_movement = player1.getMovement()
     player2_movement = player2.getMovement()
 
-    # removed player1_rect variable, pointer to player1.playerRect is passed in and updated, redundant variable.
+    # Movement calls for the main game loop
     P1Collisions = MovePlayer(player1, player1_movement, tile_rects, lavaRects, player2) 
     P1PlayerCollision = PlayerCollisionTest(player1.playerRect, player2.playerRect)
     P2Collisions = MovePlayer(player2, player2_movement, tile_rects, lavaRects, player1)
@@ -368,16 +362,7 @@ level = []
 tile_rects = []
 lavaRects = []
 
-# load the level data from file
-# Note: This code for the tile_rects is redundant, it's just redefined down in the main loop
-# level, tile_rects, lavaRects = load_level(levelPath, cols, rows)
-# tile_rects = []
-# replace the tile indices with tile images in the level data
-# for row in range(len(level)):
-#     for col in range(len(level[row])):
-#         tile_index = level[row][col]
-#         if tile_index != 0:
-#             level[row][col] = tile_images[tile_index]
+
 camera_y = 2560
 old_camera_y = 2560
 target_camera_y = 2560
@@ -395,7 +380,6 @@ while True: # game loop
         camera_y = 2560
         old_camera_y = 2560
         target_camera_y = 2560
-        print('player 1 score: %d\nplayer 2 score: %d' % (player1.score, player2.score))
         ourgame.IntroScreen()
 
     if ourgame.flag == 1:
@@ -419,7 +403,6 @@ while True: # game loop
         camera_y = 2560
         old_camera_y = 2560
         target_camera_y = 2560
-        print('player 1 score: %d\nplayer 2 score: %d' % (player1.score, player2.score))
         ourgame.RoundOverScreen()
 
     if ourgame.flag == 3:
@@ -458,5 +441,4 @@ while True: # game loop
         camera_y = 2560
         old_camera_y = 2560
         target_camera_y = 2560
-        print('player 1 score: %d\nplayer 2 score: %d' % (player1.score / 2, player2.score / 2))
         ourgame.GameOver()
