@@ -1,10 +1,9 @@
 # SWEN-Project
 ![SummitSprintCover](https://github.com/CameronJ2/Summit-Sprint/assets/114731000/4fb3608c-c279-4b36-9462-fc7a6ad19618)
 <div align="center">
-          <img src = "https://github.com/CameronJ2/Summit-Sprint/assets/114731000/4fb3608c-c279-4b36-9462-fc7a6ad19618"
-	width = "300"
-	height = "300" />
+          <img src = "https://github.com/CameronJ2/Summit-Sprint/assets/114731000/4fb3608c-c279-4b36-9462-fc7a6ad19618"/>
 </div>
+
 ## Description 
 	Summit Sprint is a competitive 2d platformer racing game where the goal is to safely reach the top of the map or outpace your opponent in a best of three format. There are three unique levels that get more difficult with each round. A player wins a round in one of three ways: 
         Your opponent hits a lava hazard.
