@@ -45,7 +45,7 @@ def load_level(level_path, cols, rows):
 def WinZoneLoader(state):
     if state == 1:
         winZone = pg.Rect(425, -2450, 200, 20)
-        return winZone
+        return winZone  
     if state == 2:
         winZone = pg.Rect(425, -2450, 200, 20)
         return winZone
