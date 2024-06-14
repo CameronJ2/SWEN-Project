@@ -1,5 +1,4 @@
-# SWEN-Project
-![SummitSprintCover](https://github.com/CameronJ2/Summit-Sprint/assets/114731000/4fb3608c-c279-4b36-9462-fc7a6ad19618)
+# Summit Sprint
 <div align="center">
           <img src = "https://github.com/CameronJ2/Summit-Sprint/assets/114731000/4fb3608c-c279-4b36-9462-fc7a6ad19618"/>
 </div>
