@@ -11,13 +11,13 @@ pg.display.set_caption('Summit Sprint') # set the window name
 WINDOW_SIZE = (960,640) # set up window size
 screen = pg.display.set_mode(WINDOW_SIZE,0,32) # initiate screen
 display = pg.Surface((960, 640))
-player1 = Player('Main\img\Owl_Mon', K_UP, K_LEFT, K_DOWN, K_RIGHT, 150, 500)
-player2 = Player('Main\img\Pink_Mon', K_w, K_a, K_s, K_d, 100, 500)
+player1 = Player('img\Owl_Mon', K_UP, K_LEFT, K_DOWN, K_RIGHT, 150, 500)
+player2 = Player('img\Pink_Mon', K_w, K_a, K_s, K_d, 100, 500)
 rows = 100
 cols = 30
 screen_width = 960
 screen_height = 640
-textFont = pg.font.Font('Main\ourfont.ttf',32)
+textFont = pg.font.Font('ourfont.ttf',32)
 #rectangle at the bottom of the screen for killing the player
 killZone = pg.Rect(0, 630, 960, 10)
 #defferent lava hit box locations for killing the player
@@ -25,7 +25,7 @@ lava = pg.Rect(416, 544, 32, 32)
 lava1 = pg.Rect(544, 480, 32, 32)
 winZone = 0
 #winZone = pg.Rect(425, -2450, 200, 20)
-levelPath = 'Main/level2.txt'
+levelPath = 'level2.txt'
 tile_size = 32
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -66,7 +66,7 @@ class Game:
                     winZone = WinZoneLoader(2)
                 elif ourgame.flag == 4:
                     winZone = WinZoneLoader(3)
-            screen.blit(pg.image.load('Main\Free\BG_1\BG_1.png'), (0,0))
+            screen.blit(pg.image.load('Free\BG_1\BG_1.png'), (0,0))
             screen.blit(play_button.image, play_button.rect)
             StringToScreen("Summit Sprint", textFont, WHITE, 50, 300)
             clock.tick(60)
@@ -126,7 +126,7 @@ class Game:
                 elif ourgame.flag == 4:
                     winZone = WinZoneLoader(3)
 
-            screen.blit(pg.image.load('Main\Free\BG_2\BG_2.png'), (0,0))
+            screen.blit(pg.image.load('Free\BG_2\BG_2.png'), (0,0))
             screen.blit(play_button.image, play_button.rect)
             StringToScreen('%s won the round!' % winner, textFont, GREEN, 50, 200)
             clock.tick(60)
@@ -155,7 +155,7 @@ class Game:
             if play_button.is_pressed(mouse_pos, mouse_pressed):
                 GOBool = False
                 self.flag = -1
-            screen.blit(pg.image.load('Main\Free\BG_3\BG_3.png'), (0,0))
+            screen.blit(pg.image.load('Free\BG_3\BG_3.png'), (0,0))
             screen.blit(play_button.image, play_button.rect)
             StringToScreen('%s won the game!' % winner, textFont, GREEN, 50, 200)
             clock.tick(60)
@@ -341,9 +341,9 @@ def MainGameLoop():
 
 
 #background image
-BG3 = pg.image.load('Main/Free/BG_3/BG_3.png').convert_alpha()
-BG2 = pg.image.load('Main/Free/BG_2/BG_2.png').convert_alpha()
-BG1 = pg.image.load('Main/Free/BG_1/BG_1.png').convert_alpha()
+BG3 = pg.image.load('Free/BG_3/BG_3.png').convert_alpha()
+BG2 = pg.image.load('Free/BG_2/BG_2.png').convert_alpha()
+BG1 = pg.image.load('Free/BG_1/BG_1.png').convert_alpha()
 
 #resizes BG
 Bimg3 = pg.transform.scale(BG3, (1929 * 4, 400 * 4))
@@ -351,7 +351,7 @@ Bimg2 = pg.transform.scale(BG2, (1929 * 4, 400 * 4))
 Bimg1 = pg.transform.scale(BG1, (1929 * 4, 400 * 4))
 
 # load the tiles from the tile folder
-tile_images = load_tiles('Main/level_editor/Tiles/1_Tiles')
+tile_images = load_tiles('level_editor/Tiles/1_Tiles')
 
 # create an empty level
 level = []
@@ -380,7 +380,7 @@ while True: # game loop
 
     if ourgame.flag == 1:
         screen.fill((0,0,0))
-        levelPath = 'Main/level.txt'
+        levelPath = 'level.txt'
         level = []
         tile_rects = []
         lavaRects = []
@@ -403,7 +403,7 @@ while True: # game loop
 
     if ourgame.flag == 3:
         screen.fill((0,0,0))
-        levelPath = 'Main/level1.txt'
+        levelPath = 'level1.txt'
         level = []
         tile_rects = []
         lavaRects = []
@@ -417,7 +417,7 @@ while True: # game loop
 
     if ourgame.flag == 4:
         screen.fill((0,0,0))
-        levelPath = 'Main/level2.txt'
+        levelPath = 'level2.txt'
         level = []
         tile_rects = []
         lavaRects = []

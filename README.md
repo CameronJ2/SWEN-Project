@@ -24,4 +24,6 @@
         S: Push
 
 ## Quick Start:
+    Install Python 3.12 or higher.
+    `pip install pygame` in command prompt to get the pygame package.
     
